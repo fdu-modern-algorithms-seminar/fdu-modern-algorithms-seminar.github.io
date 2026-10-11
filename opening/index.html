@@ -1,0 +1,1301 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>算法必须停机、正确、而且快吗？——现代算法讨论班 · 开场</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400..600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.22/dist/katex.min.js"></script>
+<style>
+:root{
+  --paper:#F6F4EE; --paper2:#FFFDF8; --ink:#14171c; --ink2:#363b44; --muted:#646a73; --faint:#9a9ea5;
+  --line:#e0dcd2; --line2:#cbc6ba;
+  --navy:#17305c; --blue:#1f4180; --blue2:#8aa1c8; --blue3:#d5deec; --blue4:#eaeef5;
+  --rust:#b8501a;--teal:#2b6b60;--tealbg:#e2eeeb; --amber:#b8501a; --rustbg:#f7e6d9; --amberbg:#f7e6d9;
+  --serif:'Source Serif 4','Noto Serif SC','Source Han Serif SC','Songti SC','STSong','SimSun',serif;
+  --sans:Inter,'Noto Sans SC','PingFang SC','Microsoft YaHei','Source Han Sans SC',system-ui,sans-serif;
+  --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+  --rail:#d9d4c8; --railon:var(--navy); --footink:var(--faint);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{overflow:hidden;background:#2a2d33;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased;font-feature-settings:'cv11','ss01'}
+a{color:var(--blue);text-decoration:none}
+#stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#deck{position:relative;width:1600px;height:900px;flex:none;background:var(--paper);overflow:hidden;transform-origin:center center;box-shadow:0 30px 80px rgba(0,0,0,.35)}
+
+/* ---------- slide frame ---------- */
+.slide{position:absolute;inset:0;padding:64px 96px 92px;display:none;flex-direction:column}
+.slide.active{display:flex}
+.slide>header{flex:none;margin-bottom:26px}
+.eyebrow{display:flex;align-items:center;gap:14px;font:600 14px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--pc,var(--blue));margin-bottom:14px}
+.eyebrow .rn{font:600 14px var(--mono);letter-spacing:.06em;color:var(--paper);background:var(--pc,var(--navy));padding:3px 8px 2px;border-radius:2px}
+.eyebrow .pt{color:var(--rust);display:flex;align-items:center;gap:14px}
+.eyebrow .pt:before{content:'';width:22px;height:1.5px;background:var(--rust)}
+h1{font:600 84px/1.02 var(--serif);letter-spacing:-.02em;margin:0 0 28px}
+h2{font:600 50px/1.08 var(--serif);letter-spacing:-.015em;margin:0;color:var(--ink)}
+h3{font-size:26px;line-height:1.25;font-weight:650;margin:0 0 10px}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:safe center;gap:18px}
+.foot{position:absolute;left:96px;right:96px;bottom:30px;display:grid;grid-template-columns:1fr 760px 1fr;align-items:end;gap:32px;font-size:14px;color:var(--footink)}
+.foot .ttl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.01em}
+.foot .n{font:500 15px var(--mono);text-align:right;letter-spacing:.04em}
+.foot .n b{color:var(--ink2);font-weight:600}
+.rail{display:flex;gap:6px}
+.rail .seg{display:flex;flex-direction:column;gap:7px;min-width:0}
+.rail .bar{height:3px;background:var(--rail);position:relative;border-radius:2px;overflow:hidden}
+.rail .fill{position:absolute;left:0;top:0;bottom:0;background:var(--railon)}
+.rail span{font:500 11px var(--sans);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--footink)}
+.rail .on span{color:var(--railon);font-weight:700}
+
+/* ---------- text ---------- */
+p{font-size:26px;line-height:1.45;margin:0 0 10px}
+ul,ol{margin:0 0 8px;padding-left:26px}
+li{font-size:26px;line-height:1.42;margin:0 0 10px;padding-left:6px}
+li::marker{color:var(--blue2);font-weight:600}
+ol li::marker{color:var(--blue);font:600 .85em var(--mono)}
+.small,.small p,.small li,p.small,li.small{font-size:22.5px;line-height:1.45}
+.lead{font:400 32px/1.35 var(--serif)}
+.muted{color:var(--muted)}
+.mono{font-family:var(--mono)}
+code.mono{font-size:.88em;background:var(--blue4);padding:1px 6px;border-radius:3px}
+b,strong{font-weight:650}
+.blue{color:var(--blue)}
+.amber{color:var(--rust)}
+.cap{font-size:18px;line-height:1.4;color:var(--muted);margin:8px 0 0}
+.cols{display:grid;grid-template-columns:var(--c,1fr 1fr);gap:var(--g,56px);align-items:start;min-height:0}
+.vstack{display:flex;flex-direction:column;gap:14px}
+.lede{font:400 30px/1.4 var(--serif);color:var(--ink2)}
+
+/* key takeaway and labelled boxes */
+.key{flex:none;position:relative;margin-top:14px;padding:18px 0 0 46px;border-top:1px solid var(--line2);font:500 29px/1.36 var(--serif);color:var(--navy)}
+.key:before{content:'→';position:absolute;left:4px;top:19px;font:500 26px var(--sans);color:var(--rust)}
+.key b{font-weight:700}
+.key .katex{font-weight:400}
+.box{border-left:2px solid var(--blue2);padding:2px 0 2px 22px;margin:0 0 6px}
+.box .lbl{display:block;font:700 13px var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--blue);margin-bottom:8px}
+.box p:last-child,.box ul:last-child{margin-bottom:2px}
+.box.acc{border-left-color:var(--rust)}
+.box.acc .lbl{color:var(--rust)}
+.box.fill{border-left:none;background:var(--blue4);padding:16px 24px 14px;border-radius:3px}
+.box.flat{border-left-color:var(--line2)}
+.box.flat .lbl{color:var(--muted)}
+.calc{border-left:2px solid var(--rust);padding:4px 0 4px 22px}
+.calc p{margin:0 0 6px;font-size:21px;line-height:1.45}
+
+/* math */
+.tex.mb{display:block;font-size:28px;margin:8px 0 12px}
+.tex.mb.big{font-size:40px}
+.tex.mb.sm{font-size:24px}
+.katex{font-size:1.06em}
+.katex-display{margin:0;text-align:left}
+.katex-display>.katex{text-align:left}
+
+/* pseudocode */
+.algo{font:22px/1.6 var(--mono);margin:0 0 12px;padding:6px 0}
+.algo .ln{display:flex;padding-right:16px;white-space:pre}
+.algo .no{flex:none;width:38px;color:var(--faint);user-select:none}
+.algo .kw{color:var(--blue);font-weight:700}
+.algo .cm{color:var(--faint)}
+
+/* tables */
+table.t{border-collapse:collapse;font-size:22px;line-height:1.3;font-variant-numeric:tabular-nums}
+table.t th{text-align:left;font:600 13px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);border-bottom:1.5px solid var(--ink);padding:8px 14px}
+table.t th .katex,.box .lbl .katex{text-transform:none;letter-spacing:0;font-size:1.25em}
+table.t td{padding:8px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+table.t td:first-child,table.t th:first-child{padding-left:12px;border-left:3px solid transparent}
+table.t tr:last-child td{border-bottom:1.5px solid var(--line2)}
+table.t tr.cur td{background:var(--rustbg)}
+table.t tr.cur td:first-child{border-left-color:var(--rust)}
+table.t .r{text-align:right}
+table.t td.r{font-family:var(--mono);font-size:.9em}
+table.t.mono td{font-family:var(--mono);font-size:.9em}
+table.t.sm{font-size:19.5px;line-height:1.28}
+table.t.sm th{font-size:12px;padding:6px 10px}
+table.t.sm td{padding:6px 10px}
+table.wide{width:100%}
+
+/* fragments */
+[data-step],[data-only]{transition:opacity .25s ease}
+.hidden{opacity:0;visibility:hidden}
+
+/* svg figures */
+svg.fig{display:block;overflow:visible;font-family:var(--sans)}
+svg text{fill:var(--ink);font-size:20px}
+svg .mono{font-family:var(--mono)}
+svg .lbl{font-size:17px;fill:var(--muted)}
+svg .lblb{font-size:18px;fill:var(--blue);font-weight:600}
+svg .bold{font-weight:650}
+svg .ln line,svg .ln path,svg line.ln,svg path.ln{stroke:var(--ink2);stroke-width:1.5;fill:none}
+svg .ln polygon,svg polygon.ln{fill:var(--ink2)}
+svg .lnA line,svg .lnA path,svg line.lnA,svg path.lnA{stroke:var(--rust);stroke-width:2.4;fill:none}
+svg .lnA polygon,svg polygon.lnA{fill:var(--rust);stroke:none}
+svg .lnB line,svg .lnB path,svg line.lnB,svg path.lnB{stroke:var(--blue2);stroke-width:2.2;fill:none}
+svg .lnB polygon,svg polygon.lnB{fill:var(--blue2)}
+svg .dash line,svg line.dash,svg path.dash,svg .dash path{stroke-dasharray:6 5}
+svg .faint{stroke:var(--line);stroke-width:1}
+svg .axis{stroke:var(--ink2);stroke-width:1.4}
+svg .grid{stroke:var(--line);stroke-width:1}
+svg .curve{fill:none;stroke:var(--blue);stroke-width:3;stroke-linejoin:round}
+svg .curveA{fill:none;stroke:var(--rust);stroke-width:3}
+svg .curveB{fill:none;stroke:var(--blue2);stroke-width:2.4;stroke-dasharray:7 6}
+svg .dot{fill:var(--blue)}
+svg .dotA{fill:var(--rust)}
+svg .plain{fill:var(--paper2);stroke:var(--line2);stroke-width:1.3}
+svg .ghost{fill:none;stroke:var(--faint);stroke-width:1.5;stroke-dasharray:5 4}
+svg .node{fill:var(--paper2);stroke:var(--blue);stroke-width:2}
+svg .nodeA{fill:var(--rustbg);stroke:var(--rust);stroke-width:2.2}
+svg .band{fill:var(--blue4)}
+
+/* title slide */
+.slide.title{padding-top:84px}
+.title .body{justify-content:flex-start;gap:0}
+.title .kicker{font:600 15px var(--sans);letter-spacing:.18em;text-transform:uppercase;color:var(--blue);margin-bottom:34px;display:flex;gap:16px;align-items:center}
+.title .kicker:after{content:'';width:80px;height:1.5px;background:var(--rust)}
+.title h1{font-size:108px;line-height:.98;letter-spacing:-.025em;margin:0 0 30px;max-width:1300px}
+.title h1 em{font-style:italic;color:var(--navy)}
+.title .thesis{font:italic 400 32px/1.35 var(--serif);color:var(--ink2);max-width:1120px;margin:0}
+/* title slide: the poll */
+.title .thesis{font-style:normal;font-weight:500;color:var(--navy)}
+.title .who{margin-top:auto;margin-bottom:18px;font-size:19px;color:var(--muted);letter-spacing:.02em}
+.poll{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--ink)}
+.poll>div{padding:20px 28px 0 0;display:flex;flex-direction:column;gap:12px}
+.poll>div+div{padding-left:28px;border-left:1px solid var(--line2)}
+.poll .w{font:600 32px/1.1 var(--serif)}
+.poll .o{display:flex;gap:8px}
+.poll .o span{font:500 14px var(--mono);color:var(--muted);border:1px solid var(--line2);padding:3px 11px;border-radius:2px}
+
+/* chapter opener header */
+.chap{display:flex;align-items:center;gap:22px;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+.chap .cn{font:italic 600 58px/1 var(--serif);color:var(--pc);min-width:48px}
+.chap .ct{display:flex;align-items:center;gap:14px;font:600 14px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--pc)}
+.chap .cq{font:italic 400 25px var(--serif);color:var(--muted);margin-top:3px}
+.qed{color:var(--rust);font-weight:700}
+
+/* the three-question ledger */
+.ledger{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--ink)}
+.ledger .lg{padding:18px 26px 4px 0;display:flex;flex-direction:column;gap:8px}
+.ledger .lg+.lg{padding-left:26px;border-left:1px solid var(--line2)}
+.ledger .h{display:flex;align-items:baseline;gap:12px}
+.ledger .rn{font:600 15px var(--mono);color:var(--c)}
+.ledger .w{font:600 32px/1.1 var(--serif);color:var(--c)}
+.ledger .qq{font:italic 400 23px/1.3 var(--serif);color:var(--ink2)}
+.ledger .a{font-size:20px;line-height:1.45;color:var(--ink2)}
+.ledger .a.todo{color:var(--faint);font:italic 400 19px var(--serif)}
+.ledger .lg.now{background:linear-gradient(var(--c),var(--c)) top left/100% 4px no-repeat}
+.ledger.mini{margin-top:4px}
+.ledger.mini .lg{padding-top:12px;gap:4px}
+.ledger.mini .w{font-size:21px}
+.ledger.mini .rn{font-size:12px}
+.ledger.mini .qq{display:none}
+.ledger.mini .a{font-size:16.5px;line-height:1.4}
+.ledger.mini .a.todo{font-size:16px}
+.ledger.mini .lg:not(.now) .a:not(.todo){color:var(--muted)}
+
+/* slide 2: an annotated statement */
+.stmt{font:400 33px/1.5 var(--serif);border-left:3px solid var(--ink);padding:4px 0 4px 28px;margin:0 0 26px}
+.stmt .q1,.stmt .q2,.stmt .q3{text-decoration:underline;text-decoration-thickness:3px;text-underline-offset:7px}
+.stmt sup{font:700 13px var(--mono);margin-left:3px}
+.q1{text-decoration-color:var(--blue)!important}.q1 sup{color:var(--blue)}
+.q2{text-decoration-color:var(--rust)!important}.q2 sup{color:var(--rust)}
+.q3{text-decoration-color:var(--teal)!important}.q3 sup{color:var(--teal)}
+.legend{display:flex;flex-direction:column;gap:10px;padding-left:31px}
+.legend>div{font-size:21px;color:var(--ink2);display:flex;gap:16px;align-items:baseline}
+.legend b{font:700 14px var(--mono);color:var(--c);min-width:28px}
+table.t th[scope],table.t tr>th:first-child:not(:only-child){}
+
+/* slide 4: the season, day by day */
+.days{display:grid;grid-template-columns:repeat(14,1fr);gap:6px;margin-top:6px}
+.days .d{border:1px solid var(--line2);background:var(--paper2);padding:9px 0 11px;text-align:center}
+.days .d i{display:block;font:500 12px var(--mono);font-style:normal;color:var(--faint);margin-bottom:3px}
+.days .d b{font:600 18px var(--sans);color:var(--blue)}
+.days .d.buy{border-color:var(--rust);background:var(--rustbg)}
+.days .d.buy b{color:var(--rust)}
+.days .d.unk{border-style:dashed;background:transparent}
+.days .d.unk b{color:var(--faint)}
+
+/* small trio variant (specifications) */
+.trio.sm .f{font-size:24px;min-height:52px}
+.trio.sm .rn{font-size:13px;line-height:1.4}
+.trio.sm .q{font-size:21px}
+
+/* tags for the three questions */
+.tag{display:inline-block;font:700 12px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--c);border:1.5px solid var(--c);padding:2px 8px;border-radius:2px}
+table.map td .tag{min-width:40px;text-align:center}
+table.spec td[data-step]{color:var(--ink);font-weight:500}
+
+/* figure classes added for the restructured deck */
+svg .missc{fill:var(--teal)}
+svg .hitc{fill:var(--tealbg)}
+svg .lnT line,svg .lnT path{stroke:var(--teal);stroke-width:2;fill:none}
+svg .lnT polygon{fill:var(--teal)}
+svg .nodeT{fill:var(--tealbg);stroke:var(--teal);stroke-width:2}
+
+/* closing: three answers */
+.closing .kick{font:600 15px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--blue2);margin-bottom:30px}
+.closing .ans{display:grid;grid-template-columns:230px 1fr;gap:22px 34px;margin:0;max-width:1300px}
+.closing .ans dt{font:600 48px/1.05 var(--serif);color:#fff}
+.closing .ans dd{margin:0;font-size:27px;line-height:1.42;color:#cdd6e6;padding-top:8px}
+.slide.appx .eyebrow .rn{background:var(--muted)}
+
+/* part dividers and closing (dark) */
+.slide.divider,.slide.closing{background:var(--navy);color:#eef0f4;--rail:rgba(255,255,255,.16);--railon:#fff;--footink:rgba(255,255,255,.45)}
+.slide.divider .foot .n b,.slide.closing .foot .n b{color:#fff}
+.divider .body{justify-content:center;gap:0;align-items:flex-start;position:relative}
+.divider .bignum{position:absolute;right:-30px;top:50%;transform:translateY(-54%);font:italic 600 560px/1 var(--serif);color:rgba(255,255,255,.055);pointer-events:none;letter-spacing:-.04em}
+.divider .dnum{font:600 16px var(--mono);letter-spacing:.24em;text-transform:uppercase;color:var(--blue2);margin-bottom:22px}
+.divider h1{font-size:76px;margin:0;color:#fff;max-width:1150px;position:relative}
+.divider .rule{width:120px;height:3px;background:#e07a3f;margin:30px 0 26px}
+.divider .sub{font:italic 400 34px/1.32 var(--serif);color:#cdd6e6;max-width:1100px}
+.divider .dnote{font-size:21px;line-height:1.5;color:rgba(255,255,255,.62);margin-top:22px;max-width:1000px}
+.divider .toc{display:flex;flex-wrap:wrap;gap:10px 34px;margin-top:44px;padding-top:20px;border-top:1px solid rgba(255,255,255,.16);max-width:1300px}
+.divider .toc span{font-size:17px;color:rgba(255,255,255,.72)}
+.divider .toc i{font:500 14px var(--mono);font-style:normal;color:#e07a3f;margin-right:9px}
+.closing .body{justify-content:center;align-items:flex-start;gap:0}
+.closing .from{font:italic 400 44px/1.2 var(--serif);color:rgba(255,255,255,.55);margin:0 0 6px}
+.closing .from s{text-decoration-color:#e07a3f;text-decoration-thickness:2px}
+.closing .to{font:600 76px/1.06 var(--serif);color:#fff;letter-spacing:-.02em;margin:0;max-width:1300px}
+.closing .rule{width:120px;height:3px;background:#e07a3f;margin:40px 0 28px}
+.closing .last{font:400 30px/1.4 var(--sans);color:#cdd6e6;max-width:1150px;margin:0}
+.closing .last b{color:#fff}
+
+/* big statements, cards, grids */
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1.5px solid var(--ink)}
+.trio>div{padding:22px 32px 6px 0;display:flex;flex-direction:column;gap:10px}
+.trio>div+div{padding-left:32px;border-left:1px solid var(--line2)}
+.trio .rn{font:600 15px var(--mono);color:var(--rust);letter-spacing:.1em}
+.trio .w{font:600 46px/1.05 var(--serif)}
+.trio .f{font-size:26px;min-height:44px;display:flex;align-items:center}
+.trio .q{font:italic 400 24px/1.35 var(--serif);color:var(--muted)}
+.trio .q b{font-style:normal;color:var(--navy);font-family:var(--sans);font-size:15px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:4px}
+.triple{display:flex;align-items:stretch;justify-content:center;gap:18px}
+.triple .t{background:var(--navy);color:#fff;font:600 38px var(--serif);padding:18px 34px;display:flex;align-items:center;border-radius:2px}
+.triple .t.acc{background:var(--rust)}
+.qbig{font:600 52px/1.16 var(--serif);letter-spacing:-.015em;text-align:center;margin:0 auto 8px;max-width:1300px}
+.caps{display:grid;grid-template-columns:repeat(3,1fr);gap:28px}
+.caps .c{border-top:2px solid var(--navy);padding:18px 4px 4px;display:flex;flex-direction:column;gap:8px}
+.caps .c .t{font:700 14px var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--blue)}
+.caps .c .v{font:600 32px/1.15 var(--serif)}
+.caps .c .s{font-size:20px;color:var(--muted);line-height:1.4}
+.caps4{display:grid;grid-template-columns:repeat(4,1fr);gap:26px}
+.caps4 .c{border-top:2px solid var(--navy);padding:16px 2px 4px;display:flex;flex-direction:column;gap:8px}
+.caps4 .c:last-child{border-top-color:var(--rust)}
+.caps4 .c .t{font:700 13px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
+.caps4 .c:last-child .t{color:var(--rust)}
+.caps4 .c .v{font:600 29px/1.15 var(--serif)}
+.caps4 .c .s{font-size:19px;color:var(--ink2);line-height:1.45}
+.caps4 .c .s .tex.mb{margin:2px 0 10px}
+.road{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.road .c{background:var(--paper2);border:1px solid var(--line2);border-top:3px solid var(--navy);padding:20px 24px 22px;position:relative}
+.road .c+.c:before{content:'→';position:absolute;left:-19px;top:30px;color:var(--blue2);font-size:20px}
+.road .rn{font:600 14px var(--mono);color:var(--rust);letter-spacing:.1em}
+.road .w{font:600 34px/1.15 var(--serif);margin:6px 0 10px}
+.road .q{font-size:22px;color:var(--ink2);margin:0}
+.road .s{font:italic 400 21px var(--serif);color:var(--muted);margin-top:6px}
+.road-join{height:34px;margin:0 16.6%;border:1.5px solid var(--blue2);border-top:none;position:relative}
+.road-join:before{content:'';position:absolute;left:50%;top:0;bottom:0;border-left:1.5px solid var(--blue2)}
+.road-syn{background:var(--navy);color:#fff;padding:22px 30px;display:flex;align-items:baseline;gap:22px}
+.road-syn .rn{font:600 14px var(--mono);color:#e07a3f;letter-spacing:.1em}
+.road-syn .w{font:600 34px var(--serif)}
+.road-syn .s{font:italic 400 24px var(--serif);color:#cdd6e6;margin-left:auto}
+.syn{display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.syn .col{display:flex;flex-direction:column;background:var(--paper2);border:1px solid var(--line2)}
+.syn .top{background:var(--navy);color:#fff;padding:16px 24px;font:700 15px var(--sans);letter-spacing:.18em}
+.syn .mid{padding:16px 24px 0;font:italic 400 24px var(--serif);color:var(--rust)}
+.syn .bot{padding:8px 24px 24px;font-size:20px;line-height:1.6;color:var(--ink2)}
+.syn .bot b{display:block;font:600 30px/1.2 var(--serif);color:var(--ink);margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--line)}
+
+/* discussion & references */
+.qs{counter-reset:q;border-top:1.5px solid var(--ink)}
+.qs .q{border-bottom:1px solid var(--line);padding:20px 0 16px;display:grid;grid-template-columns:84px 1fr}
+.qs .q:before{counter-increment:q;content:'0' counter(q);font:500 22px var(--mono);color:var(--rust);padding-top:8px}
+.qs .q p{font:600 33px/1.2 var(--serif);margin:0 0 8px}
+.qs .q>div>span{display:block;font-size:20px;color:var(--muted);line-height:1.45}
+.refs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 48px;border-top:1.5px solid var(--ink);padding-top:20px}
+.refs h3{font:700 13px var(--sans);letter-spacing:.15em;text-transform:uppercase;color:var(--rust);margin:0 0 14px}
+.refs p{font-size:18px;line-height:1.42;margin:0 0 13px;padding-left:14px;text-indent:-14px}
+aside.notes{display:none}
+
+/* overlays */
+#notes{display:none;position:fixed;left:3%;right:3%;bottom:2%;max-height:48vh;overflow:auto;background:var(--paper2);border-top:3px solid var(--rust);box-shadow:0 10px 40px rgba(0,0,0,.35);padding:18px 26px;z-index:40;font-size:19px;line-height:1.65}
+#notes.open{display:block}
+#notes h4{margin:0 0 10px;color:var(--blue);font:600 14px var(--mono)}
+#notes .zh p{margin:0 0 8px;font:400 21px/1.7 'PingFang SC','Noto Sans SC','Microsoft YaHei',var(--sans);color:var(--ink)}
+#notes .zh .cue{color:var(--rust);font-weight:600;font-size:.86em}
+#notes details{margin-top:10px;border-top:1px solid var(--line);padding-top:8px}
+#notes summary{cursor:pointer;font:600 13px var(--mono);color:var(--muted)}
+#notes details p{font-size:16px;line-height:1.55;color:var(--muted);margin:6px 0 0}
+#overview{display:none;position:fixed;inset:0;background:#2a2d33;overflow:auto;z-index:30;padding:28px 36px}
+#overview.open{display:block}
+#overview .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:22px}
+#overview .card{cursor:pointer;background:#33373e;border-radius:4px;overflow:hidden}
+#overview .card.on{outline:3px solid #e07a3f}
+#overview .thumb{width:320px;height:180px;overflow:hidden;position:relative;margin:6px auto 0}
+#overview .thumb .slide{transform:scale(.2);transform-origin:0 0;width:1600px;height:900px;pointer-events:none}
+#overview .thumb .slide:not(.divider):not(.closing){background:var(--paper)}
+#overview .meta{font-size:13px;padding:8px 12px;color:#aab0b8}
+#overview .meta b{color:#fff;font-weight:600}
+
+@media print{
+  @page{size:1600px 900px;margin:0}
+  html,body{height:auto;overflow:visible;background:var(--paper);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #stage{position:static;display:block}
+  #deck{transform:none!important;width:1600px;height:auto;overflow:visible;box-shadow:none}
+  .slide{position:relative;display:flex!important;width:1600px;height:900px;break-after:page;page-break-after:always;overflow:hidden}
+  .slide:last-child{break-after:auto;page-break-after:auto}
+  .hidden{opacity:1!important;visibility:visible!important}
+  [data-only]:not(.last-only){opacity:0!important;visibility:hidden!important}
+  #notes,#overview{display:none!important}
+}
+
+/* ---------- 中文排版 ---------- */
+h1,h2,.qbig,.closing .to,.trio .w,.ledger .w,.poll .w,.caps .c .v{letter-spacing:0}
+h2{font-size:46px;line-height:1.22}
+.title h1{font-size:92px;line-height:1.16;letter-spacing:.01em}
+.title h1 em{font-style:normal;color:var(--rust)}
+.title .thesis{font-size:34px;letter-spacing:.04em}
+.chap .cq,.trio .q,.ledger .qq,.ledger .a.todo,.divider .sub,.divider .bignum,.closing .from,.lede,.syn .mid,.road .s{font-style:normal}
+.eyebrow,.chap .ct,.box .lbl,.kicker,.dnum,.refs h3,table.t th,.tag{letter-spacing:.08em}
+.box .lbl{font-size:14px}
+p,li{line-height:1.55}
+.small,.small p,.small li,p.small,li.small{line-height:1.55}
+.stmt{line-height:1.7}
+.stmt sup{font-size:12px}
+.key{font-weight:600}
+.ledger .a{font-size:19px}
+.ledger.mini .a{font-size:16px}
+.closing .ans dt{font-size:44px}
+.closing .ans dd{font-size:26px;line-height:1.5}
+.days .d i{font-family:var(--sans);font-size:12px}
+.trio.sm .rn{letter-spacing:.06em;font-family:var(--sans);font-weight:700}
+
+.divider .bignum{font-style:normal}
+p,li{font-size:27px}
+.small,.small p,.small li,p.small,li.small{font-size:24px}
+table.t.sm{font-size:21px}
+table.t.sm th{font-size:13px}
+.cap{font-size:19px}
+.box .lbl{font-size:15px}
+.ledger.mini .a{font-size:17px}
+.ledger.mini .w{font-size:23px}
+.trio.sm .f{font-size:26px}
+.trio.sm .q{font-size:22px}
+.days .d b{font-size:20px}
+.key{font-size:30px}
+
+/* ---------- 概览与动机：新组件 ---------- */
+.about{display:grid;grid-template-columns:repeat(3,1fr);border-top:1.5px solid var(--ink)}
+.about>div{padding:22px 30px 6px 0}
+.about>div+div{padding-left:30px;border-left:1px solid var(--line2)}
+.about .h{font:700 15px var(--sans);letter-spacing:.1em;color:var(--rust);margin-bottom:12px}
+.about p{font-size:25px;line-height:1.65;margin:0}
+.syl{display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(6,auto);column-gap:48px}
+.syl .it{display:grid;grid-template-columns:50px 1fr;column-gap:12px;padding:11px 10px 11px 0;border-top:1px solid var(--line)}
+.syl .it i{font:600 20px var(--mono);font-style:normal;color:var(--rust);grid-row:span 2;padding-top:3px}
+.syl .it b{font:600 23px/1.3 var(--serif)}
+.syl .it span{font-size:17.5px;color:var(--muted);line-height:1.45;margin-top:3px}
+.syl .it.now{background:linear-gradient(90deg,var(--rustbg),transparent)}
+.qs .q{grid-template-columns:72px 1fr;padding:13px 0 11px}
+.qs .q p{font-size:31px;margin:0}
+.ansline{font:500 34px/1.5 var(--serif);margin:0 0 6px;color:var(--ink)}
+.ansline b{color:var(--rust);font-weight:700;margin-right:12px}
+.lecs{display:flex;flex-direction:column;gap:12px}
+.lec{display:flex;gap:14px;align-items:baseline;font-size:21px;line-height:1.4}
+.lec i{flex:none;font:600 14px var(--sans);font-style:normal;color:#fff;background:var(--navy);padding:3px 9px;border-radius:2px}
+.stream{display:flex;align-items:center;gap:8px}
+.stream .x{border:1px solid var(--line2);background:var(--paper2);padding:10px 18px;font:500 21px var(--mono)}
+.stream .more{font-size:20px;color:var(--rust);margin-left:8px}
+.caps .c{border-top-color:var(--rust)}
+.caps .c .t{color:var(--rust);letter-spacing:.08em}
+.caps .c .v{font-size:27px}
+.caps .c .s{font-size:21px;line-height:1.55}
+table.map td{padding-top:7px;padding-bottom:7px}
+table.map .tag{font-size:15px;padding:3px 12px;letter-spacing:.06em}
+
+/* ---------- 十一个具体问题：组件 ---------- */
+.chap .cn{font-style:italic;font-size:54px}
+.chap .pn{margin-left:auto;color:var(--muted);font-weight:600;letter-spacing:.06em}
+.chap .ct{width:100%}
+.chap>div{flex:1}
+.syl .it{grid-template-columns:46px 1fr;padding:8px 10px 8px 0}
+.syl .it b{font-size:21px}
+.syl .it em{font:400 14.5px/1.35 var(--sans);color:var(--blue);font-style:normal;margin-top:1px}
+.syl .it span{font-size:15.5px;margin-top:2px}
+.syl .it i{grid-row:span 3}
+.syl .it.new b::after{content:'新增';font:700 12px var(--sans);color:#fff;background:var(--rust);padding:2px 7px;border-radius:2px;margin-left:10px;vertical-align:3px}
+.scene{font-size:22px;line-height:1.55;color:var(--ink2);margin:0 0 6px}
+.scene .rq{display:inline-block;font:600 19px var(--mono);border:1px solid var(--line2);background:var(--paper2);padding:1px 9px;margin:0 3px}
+.vs{display:grid;grid-template-columns:var(--c);align-items:stretch}
+.vs .card{background:var(--paper2);border:1px solid var(--line2);padding:20px 26px 22px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.vs .card.old{border-top:4px solid var(--line2)}
+.vs .card.new{border-top:4px solid var(--teal)}
+.vs .lab{font:700 14px var(--sans);letter-spacing:.1em;color:var(--muted)}
+.vs .card.new .lab{color:var(--teal)}
+.vs .big{font:600 56px/1.08 var(--serif);color:var(--ink)}
+.vs .card.new .big{color:var(--teal)}
+.vs .big small{font-size:28px;color:var(--muted);font-weight:400;margin:0 6px}
+.vs .sub{font-size:21px;line-height:1.6;color:var(--ink2)}
+.vs .arr{display:flex;align-items:center;justify-content:center;font-size:32px;color:var(--rust)}
+.mrow{display:flex;gap:4px;margin:2px 0 10px}
+.mrow span{flex:1;text-align:center;font:600 16px var(--mono);padding:5px 0;border-radius:2px}
+.mrow .m{background:var(--rust);color:#fff}
+.mrow .h{background:var(--line);color:var(--muted)}
+.pfoot{display:flex;align-items:center;gap:12px;border-top:1px solid var(--line2);padding-top:14px;flex-wrap:wrap}
+.pfoot .k{font:700 14px var(--sans);letter-spacing:.1em;color:var(--muted)}
+.pfoot .tag{font-size:15px;padding:3px 12px}
+.pfoot .none{font-size:19px;color:var(--ink2)}
+.pfoot .sp{flex:1}
+.lec{display:inline-flex;align-items:center;gap:10px;font-size:19px;line-height:1.3;margin-left:14px}
+.lec i{flex:none;font:600 14px var(--sans);font-style:normal;color:#fff;background:var(--navy);padding:4px 10px;border-radius:2px}
+.lec em{display:block;font:400 13.5px var(--sans);font-style:normal;color:var(--blue);margin-top:2px}
+.agenda{display:grid;grid-template-columns:1fr 0.82fr 1.08fr;border-top:1.5px solid var(--ink)}
+.agenda>div{padding:18px 26px 0 0}
+.agenda>div+div{padding-left:26px;border-left:1px solid var(--line2)}
+.agenda .h{font:600 30px var(--serif);color:var(--c);display:flex;gap:14px;align-items:baseline;margin-bottom:14px}
+.agenda .h span{font-size:38px}
+.agenda ol{margin:0;padding-left:30px}
+.agenda li{font-size:23px;line-height:1.45;margin-bottom:12px}
+.agenda li::marker{color:var(--c);font:600 18px var(--mono)}
+.agenda li i{display:block;font:500 15px var(--sans);font-style:normal;color:var(--muted);margin-top:2px}
+svg .dotT{fill:var(--teal)}
+</style>
+</head>
+<body>
+<div id="stage"><div id="deck"></div></div>
+<div id="overview" role="dialog" aria-label="Slide overview"><div class="grid"></div></div>
+<div id="notes" role="dialog" aria-label="Speaker notes"></div>
+<script>
+'use strict';
+/* =====================================================================
+   0. Assertions and small utilities
+   ===================================================================== */
+const failures = []; let checks = 0;
+function check(ok, msg) { checks++; if (!ok) { failures.push(msg); console.error('Assertion failed: ' + msg); } }
+const t = String.raw;
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+/* deterministic PRNG (mulberry32): every "random" run on the slides is reproducible */
+function rng(seed) {
+  return () => {
+    seed = seed + 0x6D2B79F5 | 0;
+    let x = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    x = x + Math.imul(x ^ x >>> 7, 61 | x) ^ x;
+    return ((x ^ x >>> 14) >>> 0) / 4294967296;
+  };
+}
+const lg = n => Math.ceil(Math.log2(n));
+
+/* =====================================================================
+   1. Computed content.
+      Every number on the slides that can be checked is computed here and
+      asserted, not typed in by hand. Model counts are labelled as such;
+      nothing below is a hardware measurement.
+   ===================================================================== */
+
+/* ---------- 1.1 Sorting: what a textbook statement already fixes ---------- */
+function mergeSortCount(a) {
+  let cmp = 0;
+  const ms = x => {
+    if (x.length < 2) return x;
+    const m = x.length >> 1, L = ms(x.slice(0, m)), R = ms(x.slice(m)), out = [];
+    let i = 0, j = 0;
+    while (i < L.length && j < R.length) { cmp++; out.push(L[i] <= R[j] ? L[i++] : R[j++]); }
+    return out.concat(L.slice(i), R.slice(j));
+  };
+  return { s: ms(a), cmp };
+}
+const SORT_IN = [38, 27, 43, 3, 9, 82, 10, 55];
+const SORT = mergeSortCount(SORT_IN);
+const MS_WORST = n => n * lg(n) - 2 ** lg(n) + 1;
+let FACT8 = 1; for (let i = 2; i <= 8; i++) FACT8 *= i;
+const SORT_LB = Math.ceil(Math.log2(FACT8));
+check(SORT.s.every((v, i) => i === 0 || SORT.s[i - 1] <= v), 'merge sort output is non-decreasing');
+check([...SORT.s].join() === [...SORT_IN].sort((a, b) => a - b).join(), 'merge sort output is a permutation of the input');
+check(MS_WORST(8) === 17, 'merge sort worst case for n = 8: n*ceil(lg n) - 2^ceil(lg n) + 1 = 17 comparisons');
+check(SORT_LB === 16, 'any comparison sort needs ceil(log2 8!) = 16 comparisons in the worst case');
+check(SORT.cmp <= MS_WORST(8) && SORT.cmp >= 1, 'this run stays within the proved worst case');
+
+/* ---------- 1.2 Ski rental ---------- */
+const SKI_B = 10;
+function ski(n, b = SKI_B) {
+  const alg = n < b ? n : (b - 1) + b;         // rent days 1..b-1, buy on day b if still needed
+  const opt = Math.min(n, b);                  // knowing n: rent throughout, or buy on day 1
+  return { alg, opt, ratio: alg / opt };
+}
+const SKI_ROWS = [3, 9, 10, 11, 25].map(n => ({ n, ...ski(n) }));
+check(ski(3).alg === 3 && ski(3).ratio === 1, 'n = 3 < b: ALG = OPT = 3');
+check(ski(10).alg === 19 && ski(10).opt === 10 && Math.abs(ski(10).ratio - 1.9) < 1e-12, 'n = b = 10: ALG 19 vs OPT 10');
+check(ski(25).alg === 19 && ski(25).opt === 10, 'n = 25: still 19 vs 10');
+{
+  let ok = true;
+  for (let b = 1; b <= 40; b++) {
+    let worst = 0;
+    for (let n = 1; n <= 200; n++) worst = Math.max(worst, ski(n, b).ratio);
+    if (Math.abs(worst - (2 - 1 / b)) > 1e-12) ok = false;
+  }
+  check(ok, 'for b = 1..40 and n = 1..200 the worst ratio of break-even is exactly 2 - 1/b');
+}
+/* any deterministic strategy is "buy on the morning of day j" (or never);
+   the adversary ends the season on day j */
+const skiAdv = (j, b = SKI_B) => ((j - 1) + b) / Math.min(j, b);
+const ADV_ROWS = [1, 5, 9, 10, 11, 20].map(j => ({ j, alg: j - 1 + SKI_B, opt: Math.min(j, SKI_B), r: skiAdv(j) }));
+let ADV_MIN = Infinity, ADV_ARG = 0;
+for (let j = 1; j <= 1000; j++) if (skiAdv(j) < ADV_MIN - 1e-12) { ADV_MIN = skiAdv(j); ADV_ARG = j; }
+check(Math.abs(ADV_MIN - 1.9) < 1e-12 && ADV_ARG === 10, 'against the adversary, the best deterministic j is j = b, ratio 2 - 1/b');
+const SKI_RAND = Math.E / (Math.E - 1);
+check(Math.abs(SKI_RAND - 1.5819767068693265) < 1e-12, 'e/(e-1) = 1.582');
+
+/* ---------- 1.3 Freivalds：枚举示例的全部 0/1 向量 ---------- */
+const MAT_A = [[1,2],[3,4]], MAT_B = [[5,6],[7,8]];
+const MAT_C = [[19,22],[43,50]], MAT_BAD = [[19,22],[43,51]];
+const matVec = (M,x) => M.map(row => row.reduce((sum,v,j) => sum+v*x[j],0));
+const matPass = (C,x) => matVec(MAT_A,matVec(MAT_B,x)).every((v,i) => v === matVec(C,x)[i]);
+const MAT_X = [[0,0],[0,1],[1,0],[1,1]];
+check(MAT_X.every(x => matPass(MAT_C,x)), 'correct product passes all four vectors');
+check(MAT_X.filter(x => matPass(MAT_BAD,x)).length === 2, 'wrong product passes exactly half of the vectors');
+check(!matPass(MAT_BAD,[0,1]) && matPass(MAT_BAD,[1,0]), 'worked examples detect and miss the error respectively');
+check(2 ** -10 === 1/1024, 'ten independent rounds: false acceptance at most 1/1024');
+
+/* ---------- 1.4 Approximation: the same epsilon, two promises ---------- */
+const AP_N = 100000, AP_F = 1000, AP_EPS = 0.01;
+const AP_ADD = AP_EPS * AP_N, AP_MUL = AP_EPS * AP_F;
+check(AP_ADD === 1000 && AP_MUL === 10, 'eps = 1%: additive slack eps*N = 1000, multiplicative slack eps*f = 10');
+
+/* ---------- 1.5 Bit lengths: what one "+" and one "x" cost in words ---------- */
+const WORD = 64;
+const BITROWS = [64, 256, 4096].map(L => ({ L, k: Math.ceil(L / WORD), add: Math.ceil(L / WORD), mul: Math.ceil(L / WORD) ** 2 }));
+check(BITROWS[2].add === 64 && BITROWS[2].mul === 4096, 'L = 4096, w = 64: 64 words; schoolbook product 64^2 = 4096 word-pairs');
+function squaringBits(k) { let bits = 2; for (let i = 0; i < k; i++) bits = 2 * bits - 1; return bits; }   // x = 2 is "10"
+const SQROWS = [3, 10, 30].map(k => ({ k, bits: squaringBits(k) }));
+check(SQROWS.every(r => r.bits === 2 ** r.k + 1), 'after k squarings of 2 the number has 2^k + 1 bits');
+check(SQROWS[1].bits === 1025 && SQROWS[2].bits === 1073741825, 'k = 10: 1025 bits; k = 30: over a billion bits');
+
+/* ---------- 1.6 Word-RAM bookkeeping ---------- */
+const LOGROWS = [1e6, 1e9, 1e12].map(n => ({ n, b: lg(n) }));
+check(LOGROWS.map(r => r.b).join() === '20,30,40', 'indices for 1e6, 1e9, 1e12 cells need 20, 30, 40 bits');
+check(lg(2 ** 32) === 32 && (2 ** 32).toString(2).length === 33, 'n = 2^32: indices 0..n-1 fit in 32 bits, the value n itself needs 33');
+const SUM_BITS = WORD + lg(1e9);
+check(SUM_BITS === 94 && Math.ceil(SUM_BITS / WORD) === 2, 'exact sum of 1e9 64-bit numbers: at most 94 bits = 2 words');
+
+/* ---------- 1.7 Block transfers: a scan, in two orders, in the block model ---------- */
+function blockTrace(order, B, M) {               // LRU cache holding M blocks of B elements
+  const cache = [], miss = [];
+  for (const i of order) {
+    const b = Math.floor(i / B), k = cache.indexOf(b);
+    if (k >= 0) { cache.splice(k, 1); miss.push(false); } else { miss.push(true); if (cache.length === M) cache.shift(); }
+    cache.push(b);
+  }
+  return { miss, loads: miss.filter(Boolean).length };
+}
+const BLK_N = 64, BLK_B = 8, BLK_M = 2;
+const SEQ_ORDER = [...Array(BLK_N).keys()];
+const RND_ORDER = (() => { const a = [...SEQ_ORDER], r = rng(7); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; })();
+const BLK_SEQ = blockTrace(SEQ_ORDER, BLK_B, BLK_M), BLK_RND = blockTrace(RND_ORDER, BLK_B, BLK_M);
+check(BLK_SEQ.loads === BLK_N / BLK_B, 'sequential scan of 64 elements, B = 8: exactly 8 block transfers');
+check(BLK_RND.loads > 4 * BLK_SEQ.loads && BLK_RND.loads <= BLK_N, 'the same 64 elements in shuffled order: many more transfers, at most one per access');
+const SC_N = 1e8, SC_B = 8;
+check(Math.ceil(SC_N / SC_B) === 12500000, 'n = 1e8 eight-byte elements, 64-byte blocks (B = 8): 1.25e7 transfers for a scan');
+
+/* ---------- 1.8 Work and span ---------- */
+const span = { chain: n => n - 1, tree: n => lg(n) };
+check(span.chain(8) === 7 && span.tree(8) === 3, 'n = 8: both shapes do 7 additions; span 7 (chain) vs 3 (tree)');
+const PAR_N = 1e6, PAR_W = PAR_N - 1;
+check(span.tree(PAR_N) === 20, 'tree summation of 1e6 values has span ceil(log2 1e6) = 20');
+const PARROWS = [1, 10, 1000, 1e6].map(P => ({
+  P, lo: Math.max(PAR_W / P, span.tree(PAR_N)), hi: PAR_W / P + span.tree(PAR_N), chain: Math.max(PAR_W / P, span.chain(PAR_N))
+}));
+check(Math.abs(PARROWS[2].hi - 1019.999) < 1e-9 && Math.abs(PARROWS[2].lo - 999.999) < 1e-9, 'tree, P = 1000: between 1000 and 1020 steps');
+check(PARROWS.every(r => r.chain === PAR_W), 'chain: never fewer than 999,999 steps, whatever P is');
+
+/* ---------- 1.9 The stream task: a counter is not free ---------- */
+const CNT_MAX = 2 ** 32 - 1, CNT_RATE = 1e6;
+const CNT_MIN = CNT_MAX / CNT_RATE / 60;
+check(Math.abs(CNT_MIN - 71.58) < 0.01, 'a 32-bit counter at 1e6 items/s overflows after 71.6 minutes');
+
+/* ---------- 1.10 Appendix material ---------- */
+function euclid(a, b) { const tr = []; while (b !== 0) { tr.push({ a, b, r: a % b }); const nx = a % b; a = b; b = nx; } return { tr, g: a }; }
+const EG = euclid(1071, 462);
+check(EG.g === 21 && EG.tr.length === 3, 'Euclid(1071, 462) = 21 in 3 steps');
+check(EG.tr.every(r => r.b > 0 && r.r < r.b), 'every step strictly descends: a mod b < b');
+
+function binomTail(k, p) {                    // P[ Bin(k,p) < k/2 ]
+  let s = 0;
+  for (let i = 0; i <= Math.floor((k - 1) / 2); i++) {
+    let c = 1; for (let j = 0; j < i; j++) c = c * (k - j) / (j + 1);
+    s += c * Math.pow(p, i) * Math.pow(1 - p, k - i);
+  }
+  return s;
+}
+const AMP = [10, 20, 48, 240].map(k => ({ k, bound: Math.exp(-k / 48), exact: binomTail(k, 2 / 3) }));
+check(AMP.every(r => r.exact <= r.bound + 1e-12), 'the exact binomial tail never exceeds the Chernoff bound');
+const AMP_K = Math.ceil(48 * 100 * Math.LN2);
+check(AMP_K === 3328, 'majority vote from 2/3 to 2^-100 needs k = 3328 runs by this bound');
+
+check((0b0011 | 0b0101) === 0b0111, 'packed truth tables: a = 0011, b = 0101, a OR b = 0111');
+
+const CM_EPS = 0.01, CM_DELTA = 0.01;
+const CM_W = Math.ceil(Math.E / CM_EPS), CM_D = Math.ceil(Math.log(1 / CM_DELTA));
+check(CM_W === 272 && CM_D === 5, 'Count-Min at eps = delta = 1%: 272 x 5 counters');
+const HLL_M = 1 << 14, HLL_ERR = 1.04 / Math.sqrt(HLL_M);
+check(Math.abs(HLL_ERR - 0.008125) < 1e-6, 'HyperLogLog, m = 2^14: standard error about 1.04/sqrt(m) = 0.81%');
+
+check(Math.log2(1024) === 10, '10n and n log2 n tie at n = 1024');
+check(Math.abs(Math.pow(2, 1000) / 1.0715086e301 - 1) < 1e-6, '1000n beats n log2 n only beyond n = 2^1000');
+
+/* =====================================================================
+   2. Small HTML / SVG helpers
+   ===================================================================== */
+const mi = tex => `<span class="tex" data-tex="${esc(tex)}">${esc(tex)}</span>`;
+const md = (tex, cls = '') => `<div class="tex mb ${cls}" data-tex="${esc(tex)}" data-display="1">${esc(tex)}</div>`;
+const key = (html, k) => `<div class="key"${k ? ` data-step="${k}"` : ''}>${html}</div>`;
+const box = (label, html, k, cls = '') => `<div class="box ${cls}"${k ? ` data-step="${k}"` : ''}><span class="lbl">${label}</span>${html}</div>`;
+const SUP = { '-': '⁻', 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+const sup = e => String(e).split('').map(c => SUP[c]).join('');
+/* readable numbers: grouped digits below 1e9, then 10ᵏ or m × 10ᵏ; tiny values as m × 10⁻ᵏ */
+function num(v) {
+  const a = Math.abs(v);
+  if (v === 0) return '0';
+  if (a < 1e-4 || a >= 1e9) {
+    const e = Math.floor(Math.log10(a)), m = +(v / 10 ** e).toPrecision(3);
+    return m === 1 ? `10${sup(e)}` : `${m} × 10${sup(e)}`;
+  }
+  return Number.isInteger(v) || a >= 1e4 ? Math.round(v).toLocaleString('en-US') : String(+v.toPrecision(4));
+}
+check(num(1e18) === '10¹⁸' && num(2.794e-8) === '2.79 × 10⁻⁸' && num(1000020) === '1,000,020', 'number formatter');
+const svg = (w, h, inner, label, style = '') => `<svg class="fig" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${esc(label)}" style="${style}">${inner}</svg>`;
+const f1 = v => typeof v === 'number' ? +v.toFixed(1) : v;
+const tx = (x, y, s, cls = '', anchor = 'start', extra = '') => `<text x="${f1(x)}" y="${f1(y)}" class="${cls}" text-anchor="${anchor}" ${extra}>${s}</text>`;
+const rc = (x, y, w, h, cls = '', extra = '') => `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" class="${cls}" ${extra}/>`;
+const ln = (x1, y1, x2, y2, cls = 'ln', extra = '') => `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" class="${cls}" ${extra}/>`;
+const cth = (cx, cy, r, cls = 'plain', extra = '') => `<circle cx="${f1(cx)}" cy="${f1(cy)}" r="${r}" class="${cls}" ${extra}/>`;
+function arrow(x1, y1, x2, y2, cls = 'ln', extra = '') {
+  const a = Math.atan2(y2 - y1, x2 - x1), h = 10, w = 5, bx = x2 - h * Math.cos(a), by = y2 - h * Math.sin(a);
+  const p = [[x2, y2], [bx + w * Math.sin(a), by - w * Math.cos(a)], [bx - w * Math.sin(a), by + w * Math.cos(a)]];
+  return `<g class="${cls}" ${extra}>${ln(x1, y1, bx, by)}<polygon points="${p.map(q => q.map(v => v.toFixed(1)).join(',')).join(' ')}"/></g>`;
+}
+function table0(rows, heads, fn, cls = '') {
+  return `<table class="t wide ${cls}"><tr>${heads.map((h, i) => `<th${i ? ' class="r"' : ''}>${h}</th>`).join('')}</tr>` +
+    rows.map(r => `<tr>${fn(r).map((c, i) => `<td${i ? ' class="r"' : ''}>${c}</td>`).join('')}</tr>`).join('') + `</table>`;
+}
+
+/* the three questions — one colour each, used throughout */
+const Q = [
+  { rn: 'I', w: '输入', q: '输入怎样提供？', c: 'var(--blue)' },
+  { rn: 'II', w: '保证', q: '什么结果算成功？', c: 'var(--rust)' },
+  { rn: 'III', w: '代价', q: '哪些资源计费，怎样计费？', c: 'var(--teal)' }
+];
+const LEDGER = [
+  '信息可能随时间到达；决策要与“当时能知道的”比较，如离线最优。',
+  '明确的规格：精确；以 ≥ 1 − δ 的概率精确；或在给定误差之内。',
+  '先定表示、原语与资源：字操作、块传输、工作量与跨度。'
+];
+/* filled = how many rows carry an answer; now = row just completed (highlighted) */
+function ledger(filled, { mini = false, now = -1, step = 0, blank = false } = {}) {
+  return `<div class="ledger${mini ? ' mini' : ''}"${step ? ` data-step="${step}"` : ''}>${Q.map((q, i) => `
+  <div class="lg${i === now ? ' now' : ''}" style="--c:${q.c}">
+    <div class="h"><span class="rn">${q.rn}</span><span class="w">${q.w}</span></div>
+    <div class="qq">${q.q}</div>
+    <div class="a${i < filled ? '' : ' todo'}">${i < filled ? LEDGER[i] : blank ? '你的条件：____________' : `第 ${q.rn} 部分回答`}</div>
+  </div>`).join('')}</div>`;
+}
+
+/* =====================================================================
+   3. Figures — generated from the computed values above
+   ===================================================================== */
+
+/* 3.1 Ski rental: what each strategy pays, n = 1..24 */
+function skiFig() {
+  const w = 600, h = 330, pl = 56, pr = 20, pt = 22, pb = 52, nmax = 24, cmax = 20;
+  const X = n => pl + n / nmax * (w - pl - pr), Y = c => h - pb - c / cmax * (h - pt - pb);
+  let s = '';
+  for (let c = 0; c <= cmax; c += 5) s += ln(pl, Y(c), w - pr, Y(c), 'grid') + tx(pl - 10, Y(c) + 5, c, 'lbl mono', 'end');
+  for (const n of [1, 5, 10, 15, 20]) s += tx(X(n), h - pb + 24, n, 'lbl mono', 'middle');
+  s += ln(pl, h - pb, w - pr, h - pb, 'axis');
+  s += tx((pl + w - pr) / 2, h - 8, '需要的天数 n', 'lbl', 'middle');
+  s += `<text class="lbl" text-anchor="middle" transform="translate(14 ${(pt + h - pb) / 2}) rotate(-90)">总花费</text>`;
+  const pts = (f, a, b) => Array.from({ length: b - a + 1 }, (_, i) => a + i).map(n => `${f1(X(n))},${f1(Y(f(n)))}`).join(' ');
+  s += `<polyline class="curve" points="${pts(n => ski(n).opt, 1, nmax)}"/>`;
+  s += `<polyline class="curveA" points="${pts(n => ski(n).alg, SKI_B, nmax)}"/>`;
+  s += ln(X(SKI_B - 1), Y(SKI_B - 1), X(SKI_B), Y(ski(SKI_B).alg), 'lnA dash');
+  for (let n = 1; n <= nmax; n++) { s += cth(X(n), Y(ski(n).opt), 3.2, 'dot'); if (n >= SKI_B) s += cth(X(n), Y(ski(n).alg), 3.2, 'dotA'); }
+  s += tx(X(17), Y(19) - 12, `保本策略：${ski(20).alg}`, 'lblb', 'middle', 'fill="var(--rust)"');
+  s += tx(X(17), Y(10) + 26, `离线最优 min(n, b) = ${SKI_B}`, 'lblb', 'middle');
+  s += ln(X(SKI_B) + 10, Y(19), X(SKI_B) + 10, Y(10), 'ln', 'stroke-dasharray="3 3"');
+  s += tx(X(SKI_B) + 18, Y(14.5) + 6, '×1.9', 'bold mono', 'start', 'fill="var(--rust)"');
+  return svg(w, h, s, 'Cost of break-even versus the offline optimum, b = 10');
+}
+
+/* 3.3 Block transfers over time: one square per access, filled when it loads a block */
+function blockFig() {
+  const w = 640, h = 200, x0 = 150, step = (w - x0) / BLK_N, cs = step - 1;
+  const row = (tr, y, lab) => {
+    let s = tx(0, y + 10, lab, 'bold', 'start') + tx(0, y + 32, `${tr.loads} 次传输`, 'lbl mono', 'start', 'fill="var(--teal)"');
+    tr.miss.forEach((m, i) => s += rc(x0 + i * step, y - 6, cs, 34, m ? 'missc' : 'hitc'));
+    return s;
+  };
+  let s = row(BLK_SEQ, 30, '顺序') + row(BLK_RND, 102, '打乱');
+  s += arrow(x0, 166, x0 + 120, 166, 'ln') + tx(x0 + 130, 171, '时间：64 次访问', 'lbl', 'start');
+  s += rc(x0, 182, 10, 14, 'missc') + tx(x0 + 16, 194, '搬入新块', 'lbl');
+  s += rc(x0 + 150, 182, 10, 14, 'hitc') + tx(x0 + 166, 194, '已在缓存', 'lbl');
+  return svg(w, h, s, 'Block transfers for a sequential and a shuffled scan');
+}
+
+/* 3.4 Summing eight numbers: a chain and a balanced tree */
+function parFig() {
+  const w = 620, h = 360;
+  let s = tx(0, 18, '链式：跨度 7', 'lblb', 'start');
+  for (let i = 0; i < 7; i++) {
+    const x = 30 + i * 84, y = 62;
+    s += cth(x, y, 17, 'node') + tx(x, y + 6, '+', 'bold', 'middle');
+    if (i) s += arrow(x - 84 + 18, y, x - 19, y, 'ln');
+  }
+  s += tx(0, 132, '平衡树：跨度 3', 'lblb', 'start', 'fill="var(--teal)"');
+  const lv = [[0, 8], [1, 4], [2, 2], [3, 1]], yOf = d => 326 - d * 56;
+  const cx = (d, i) => 30 + (i + 0.5) * (560 / (8 >> d));
+  for (const [d, cnt] of lv) for (let i = 0; i < cnt; i++) {
+    if (d === 0) s += rc(cx(0, i) - 13, yOf(0) - 13, 26, 26, 'plain', 'rx="3"') + tx(cx(0, i), yOf(0) + 6, `x${'₁₂₃₄₅₆₇₈'[i]}`, 'lbl mono', 'middle');
+    else {
+      s += arrow(cx(d - 1, 2 * i), yOf(d - 1) - 15, cx(d, i) - 10, yOf(d) + 13, 'lnT') + arrow(cx(d - 1, 2 * i + 1), yOf(d - 1) - 15, cx(d, i) + 10, yOf(d) + 13, 'lnT');
+      s += cth(cx(d, i), yOf(d), 17, 'nodeT') + tx(cx(d, i), yOf(d) + 6, '+', 'bold', 'middle');
+    }
+  }
+  return svg(w, h, s, 'Seven additions as a chain of depth 7 or a tree of depth 3');
+}
+
+/* appendix figures */
+function descentFig() {
+  const w = 560, h = 270, pl = 70, pr = 24, pt = 28, pb = 52;
+  const ymax = 500, X = i => pl + (i + 0.5) * ((w - pl - pr) / EG.tr.length), Y = v => h - pb - (v / ymax) * (h - pt - pb);
+  let s = '';
+  for (let v = 0; v <= ymax; v += 125) s += ln(pl, Y(v), w - pr, Y(v), 'grid') + tx(pl - 10, Y(v) + 5, v, 'lbl mono', 'end');
+  s += ln(pl, h - pb, w - pr, h - pb, 'axis');
+  s += `<path class="curve" d="${EG.tr.map((r, i) => (i ? 'L' : 'M') + f1(X(i)) + ' ' + f1(Y(r.b))).join(' ')}"/>`;
+  EG.tr.forEach((r, i) => { s += cth(X(i), Y(r.b), 6, 'dot') + tx(X(i), Y(r.b) - 13, r.b, 'lblb mono', 'middle') + tx(X(i), h - pb + 24, `(${r.a},${r.b})`, 'lbl mono', 'middle'); });
+  s += tx(pl + 10, Y(0) - 10, 'Φ = b 必须降到 0', 'lblb', 'start', 'fill="var(--rust)"');
+  return svg(w, h, s, 'Euclid potential descends 462, 147, 21');
+}
+function ampFig() {
+  const w = 540, h = 270, pl = 74, pr = 20, pt = 22, pb = 50, kmax = 1440, lmin = -12;
+  const X = k => pl + k / kmax * (w - pl - pr), Y = L => h - pb - (L - lmin) / (0 - lmin) * (h - pt - pb);
+  let s = '';
+  for (let L = 0; L >= lmin; L -= 3) s += ln(pl, Y(L), w - pr, Y(L), 'grid') + tx(pl - 10, Y(L) + 5, L === 0 ? '1' : '10' + sup(L), 'lbl mono', 'end');
+  for (const k of [0, 480, 960, 1440]) s += tx(X(k), h - pb + 24, String(k), 'lbl mono', 'middle');
+  s += ln(pl, h - pb, w - pr, h - pb, 'axis') + tx((pl + w - pr) / 2, h - 6, '重复次数 k', 'lbl', 'middle');
+  let d = '';
+  for (let k = 0; k <= kmax; k += 8) d += (d ? 'L' : 'M') + f1(X(k)) + ' ' + f1(Y(-k / 48 / Math.LN10));
+  s += `<path class="curveA" d="${d}"/>`;
+  const k12 = Math.ceil(48 * Math.log(1e12));
+  check(k12 === 1327, 'Chernoff reaches 1e-12 at k = 1327');
+  s += ln(pl, Y(-12), w - pr, Y(-12), 'lnA dash') + tx(X(560), Y(-12) - 10, `k = ${k12} 时达到 10⁻¹²`, 'lblb', 'middle');
+  s += tx(X(620), Y(-620 / 48 / Math.LN10) - 14, 'exp(−k/48)', 'lblb', 'start', 'fill="var(--rust)"');
+  return svg(w, h, s, 'Chernoff bound for majority voting on a log axis');
+}
+
+/* =====================================================================
+   4. 幻灯片 —— 讨论班概览 + 十一个具体问题（按标题的三个问题分组）
+      notes 字段即中文讲稿，默认隐藏，按 N 打开；【】内为动作提示。
+   ===================================================================== */
+
+/* ---------- 本节的数字：全部在页面上计算并断言（标“估算”的是假设参数） ---------- */
+function bloomFP(n, bitsPerItem) {
+  const m = n * bitsPerItem;
+  let best = 1, bestk = 0;
+  for (let k = 1; k <= 32; k++) { const fp = Math.pow(1 - Math.pow(1 - 1 / m, n * k), k); if (fp < best) { best = fp; bestk = k; } }
+  return { fp: best, k: bestk };
+}
+const BLOOM10 = bloomFP(1e6, 10);
+check(BLOOM10.k === 7 && BLOOM10.fp > 0.008 && BLOOM10.fp < 0.0085, 'Bloom filter, 10 bits per item: optimal k = 7, false positives about 0.82%');
+const URL_N = 1e9, URL_BYTES = 60;                       // 估算：每个网址约 60 字节
+const URL_SET_GB = URL_N * URL_BYTES / 1e9, URL_BLOOM_GB = URL_N * 10 / 8 / 1e9;
+check(URL_SET_GB === 60 && URL_BLOOM_GB === 1.25, '1e9 URLs: about 60 GB stored verbatim, 1.25 GB as a 10-bit-per-item Bloom filter');
+
+const IMG_N = 1e8, IMG_D = 512, FLOPS = 1e9;             // 估算：每秒 1e9 次乘加
+const IMG_OPS = IMG_N * IMG_D;
+check(IMG_OPS === 5.12e10 && IMG_OPS / FLOPS === 51.2, 'linear scan of 1e8 vectors of dimension 512: 5.12e10 multiply-adds, about 51 s at 1e9/s');
+
+const VID_BPS = 1920 * 1080 * 3 * 8 * 30, VID_STREAM = 5e6; // 估算：典型 1080p 码率 5 Mbit/s
+check(VID_BPS === 1492992000 && Math.round(VID_BPS / VID_STREAM) === 299, 'raw 1080p30 is 1.49 Gbit/s, about 300x a 5 Mbit/s stream');
+check(2 ** 8 > (2 ** 8 - 1), 'pigeonhole: 2^n strings of n bits, only 2^n - 1 strictly shorter ones');
+
+const OPT_F = x => 0.1 * x * x + Math.sin(3 * x), OPT_DF = x => 0.2 * x + 3 * Math.cos(3 * x);
+const GD_PATH = [3.3];
+for (let i = 0; i < 60; i++) GD_PATH.push(GD_PATH[GD_PATH.length - 1] - 0.05 * OPT_DF(GD_PATH[GD_PATH.length - 1]));
+const GD_END = GD_PATH[GD_PATH.length - 1];
+let GLOB_X = 0, GLOB_F = Infinity;
+for (let x = -4; x <= 4; x += 1e-4) if (OPT_F(x) < GLOB_F) { GLOB_F = OPT_F(x); GLOB_X = x; }
+const SA_BEST = (() => {
+  const r = rng(2026); let x = 3.3, best = x; const S = 3000;
+  for (let i = 0; i < S; i++) {
+    const T = 2 * Math.pow(0.005 / 2, i / S), y = Math.max(-4, Math.min(4, x + (r() * 2 - 1)));
+    const d = OPT_F(y) - OPT_F(x);
+    if (d < 0 || r() < Math.exp(-d / T)) x = y;
+    if (OPT_F(x) < OPT_F(best)) best = x;
+  }
+  return best;
+})();
+check(Math.abs(GD_END - 3.585) < 0.01 && OPT_F(GD_END) > 0.3, 'gradient descent from x = 3.3 stops in the local valley near x = 3.59');
+check(Math.abs(SA_BEST - GLOB_X) < 0.05, 'simulated annealing (seeded) reaches the global minimum near x = -0.51');
+
+const HLL_N = 1e9;
+check(HLL_N * 8 / 1e9 === 8, '1e9 distinct 64-bit user IDs take 8 GB');
+
+const REQ = 'ABCDABEABCDE'.split(''), CACHE_K = 3;
+function lruRun(seq, k) {
+  const c = [], miss = [];
+  for (const x of seq) { const i = c.indexOf(x); if (i >= 0) { c.splice(i, 1); miss.push(false); } else { miss.push(true); if (c.length === k) c.shift(); } c.push(x); }
+  return miss;
+}
+function optRun(seq, k) {                               // Belady: evict the page used farthest in the future
+  const c = [], miss = [];
+  seq.forEach((x, t) => {
+    if (c.includes(x)) { miss.push(false); return; }
+    miss.push(true);
+    if (c.length === k) {
+      const nextUse = y => { const j = seq.indexOf(y, t + 1); return j < 0 ? Infinity : j; };
+      c.splice(c.indexOf(c.reduce((a, b) => nextUse(b) > nextUse(a) ? b : a)), 1);
+    }
+    c.push(x);
+  });
+  return miss;
+}
+const LRU_M = lruRun(REQ, CACHE_K), OPT_M = optRun(REQ, CACHE_K);
+const LRU_N = LRU_M.filter(Boolean).length, OPT_N = OPT_M.filter(Boolean).length;
+check(LRU_N === 10 && OPT_N === 7, 'cache of 3, requests ABCDABEABCDE: LRU misses 10, the clairvoyant optimum 7');
+
+const ARR_N = 1e6;
+const ARR = (() => { let cap = 1, size = 0, copies = 0, worst = 0; for (let i = 0; i < ARR_N; i++) { if (size === cap) { copies += size; worst = Math.max(worst, size); cap *= 2; } size++; } return { copies, worst, avg: (ARR_N + copies) / ARR_N }; })();
+check(ARR.copies === 2 ** 20 - 1 && ARR.worst === 2 ** 19, '1e6 appends with doubling: 1,048,575 copies in total, the worst single append copies 524,288');
+check(ARR.avg < 3 && Math.abs(ARR.avg - 2.048575) < 1e-9, 'average cost per append about 2.05 < 3');
+
+const MUL_N = 1e6, MUL_SCHOOL = MUL_N ** 2, MUL_FFT = MUL_N * Math.log2(MUL_N);
+check(MUL_SCHOOL === 1e12 && Math.abs(MUL_FFT - 1.993e7) < 1e4, 'million-digit product: n^2 = 1e12 vs n log2 n = 2e7 (orders of magnitude only)');
+
+const GROVER = [1e6, 1e9].map(N => ({ N, cl: N / 2, q: Math.round(Math.PI / 4 * Math.sqrt(N)) }));
+check(GROVER[0].q === 785 && GROVER[1].q === 24836, 'Grover needs about (pi/4) sqrt(N) queries: 785 for 1e6, 24,836 for 1e9');
+
+
+/* ---------- 本节的图 ---------- */
+const missRow = m => `<div class="mrow">${REQ.map((x, i) => `<span class="${m[i] ? 'm' : 'h'}">${x}</span>`).join('')}</div>`;
+function optFig() {
+  const w = 600, h = 236, pl = 10, pr = 10, pt = 14, pb = 40, x0 = -4, x1 = 4, y0 = -1.2, y1 = 2.3;
+  const X = x => pl + (x - x0) / (x1 - x0) * (w - pl - pr), Y = y => h - pb - (y - y0) / (y1 - y0) * (h - pt - pb);
+  let d = '';
+  for (let i = 0; i <= 400; i++) { const x = x0 + i / 400 * (x1 - x0); d += (i ? 'L' : 'M') + f1(X(x)) + ' ' + f1(Y(OPT_F(x))); }
+  let s = ln(pl, h - pb, w - pr, h - pb, 'axis') + `<path class="curve" d="${d}"/>`;
+  GD_PATH.forEach((x, i) => { if (i % 4 === 0) s += cth(X(x), Y(OPT_F(x)), 3, 'dotA'); });
+  s += cth(X(GD_END), Y(OPT_F(GD_END)), 7, 'dotA') + ln(X(GD_END), Y(OPT_F(GD_END)) + 8, X(GD_END), h - pb, 'lnA dash') + tx(X(GD_END), h - 10, '梯度下降停在这里', 'lblb', 'end', 'fill="var(--rust)"');
+  s += cth(X(3.3), Y(OPT_F(3.3)), 5, 'plain') + tx(X(3.3) + 10, Y(OPT_F(3.3)) - 8, '起点', 'lbl', 'start');
+  s += cth(X(SA_BEST), Y(OPT_F(SA_BEST)), 7, 'dotT') + ln(X(SA_BEST), Y(OPT_F(SA_BEST)) + 8, X(SA_BEST), h - pb, 'ln', 'stroke="var(--teal)" stroke-dasharray="4 4"') + tx(X(SA_BEST), h - 10, '模拟退火找到这里', 'lblb', 'middle', 'fill="var(--teal)"');
+  return svg(w, h, s, '梯度下降停在局部低谷，模拟退火找到全局最低');
+}
+
+/* ---------- 结构 ---------- */
+const PARTS = ['开场', '大纲', '必须正确？', '必须停机？', '必须快？', '收束', '附录'];
+const APPX = 6;
+const MAIN_PARTS = [0, 1, 2, 3, 4, 5];
+const ROMAN = ['', '', 'I', 'II', 'III', '', '附'];
+const GROUP = ['', '', '一', '二', '三', '', ''];
+const PART_Q = ['', '', '五个“明确结果保证”的例子', '两个“停不下来、也看不到未来”的例子', '四个“快，到底在数什么”的例子', '', ''];
+const PART_C = ['var(--navy)', 'var(--navy)', 'var(--rust)', 'var(--blue)', 'var(--teal)', 'var(--navy)', 'var(--muted)'];
+const TITLE = '算法必须停机、正确、而且快吗？';
+const slides = [];
+const add = o => slides.push(o);
+
+/* 本学期大纲（据讨论班网站；开场与数据压缩同属第 1 讲） */
+const SYL = [
+  ['开场与数据压缩：熵、编码与建模', 'Opening Lecture & Compression Algorithms', '今天：讨论班概览与数据压缩'],
+  ['摊还分析与动态数据结构', 'Amortized Analysis & Dynamic Data Structures', '偶尔很慢没关系，平均下来快就行'],
+  ['概率数据结构', 'Probabilistic Data Structures', '用一点误差，换大量内存'],
+  ['高维算法：LSH 与近似最近邻', 'High-Dimensional Algorithms: LSH & ANN', '“差不多最近”就够了'],
+  ['存储层级与缓存友好算法', 'Memory Hierarchy & Cache-Aware Algorithms', '搬数据，比算数据更贵'],
+  ['并行、GPU 与异步算法', 'Parallel, GPU & Async Algorithms', '处理器再多，也绕不开依赖链'],
+  ['优化算法：从梯度下降到现代方法', 'Optimization Algorithms: GD to Modern Methods', '不求一步到位，求快速逼近'],
+  ['随机优化：模拟退火及其他', 'Randomized Optimization: SA & Beyond', '用随机性跳出局部最优'],
+  ['在线算法与在线学习', 'Online Algorithms & Online Learning', '看不到未来，也要现在做决定'],
+  ['快速多项式算法：FFT、卷积与生成函数', 'Fast Polynomial Algorithms: FFT, Convolution & Generating Functions', '规格不变，把 n² 降到 n log n'],
+  ['量子计算：量子比特、Grover 与容错', 'Quantum Computation: Qubit, Grover & Fault Tolerance', '换一种计算模型']
+];
+const L = { amort: 2, prob: 3, hd: 4, cache: 5, par: 6, opt: 7, sa: 8, online: 9, fft: 10, comp: 1, qc: 11 };
+check(SYL.length === 11 && SYL[L.comp - 1][0].startsWith('开场与数据压缩') && SYL[L.qc - 1][0].startsWith('量子'), 'syllabus: 11 lectures, opening and compression at 1, quantum at 11');
+const lec = n => `<span class="lec"><i>第 ${n} 讲</i><span>${SYL[n - 1][0]}<em>${SYL[n - 1][1]}</em></span></span>`;
+const rtag = w => `<span class="tag" style="--c:var(--rust)">${w}</span>`;
+
+/* 一页“具体问题”：情景 → 直接做（为什么不行）→ 点击揭示现代做法 → 放松了什么、哪一讲 */
+let PNO = 0;
+function puzzle(o) {
+  const no = ++PNO;
+  add({
+    part: o.part, opener: o.opener, min: o.min, pno: no, title: o.title, notes: o.notes, body: `
+<p class="scene">${o.scene}</p>
+<div class="vs" style="--c:${o.cols || '1fr 56px 1fr'}">
+ <div class="card old"><span class="lab">${o.old.lab || '直接做'}</span>${o.old.big ? `<span class="big">${o.old.big}</span>` : ''}<div class="sub">${o.old.sub}</div></div>
+ <div class="arr">→</div>
+ <div class="card new" data-step="1"><span class="lab">${o.neu.lab}</span>${o.neu.big ? `<span class="big">${o.neu.big}</span>` : ''}<div class="sub">${o.neu.sub}</div></div>
+</div>
+<div class="pfoot" data-step="1"><span class="k">${o.relax ? '放松了' : '没有放松'}</span>${o.relax ? o.relax.map(rtag).join('') : `<span class="none">${o.none}</span>`}<span class="sp"></span>${o.lecs.map(lec).join('')}</div>`
+  });
+}
+
+/* ============================ 开场 · 2.5 分钟 ============================ */
+add({ part: 0, cls: 'title', min: 1, title: TITLE, body: `
+<div class="kicker">现代算法讨论班 · 开场讲座 · 2026 年秋</div>
+<h1>算法必须<em>停机</em>、<br>必须<em>正确</em>、必须<em>快</em>吗？</h1>
+<p class="thesis">讨论班概览，与十一个具体问题</p>
+<div class="who">复旦大学数学科学学院 · Modern Algorithms Seminar</div>
+<div class="poll">${['必须停机？', '必须正确？', '必须快？'].map(q => `
+  <div><span class="w">${q}</span><span class="o"><span>是</span><span>否</span><span>看情况</span></span></div>`).join('')}
+</div>`,
+  notes: `【约 1 分钟】
+大家好，欢迎来到现代算法讨论班。
+【指向标题】今天的题目是一个问题：算法必须停机、必须正确、必须快吗？请先在心里给三个问题各选一个答案，最后回来看。
+今天分两部分：先看这学期的大纲，再看十一个具体问题——它们会回答标题。` });
+
+/* ============================ 大纲 · 5.5 分钟 ============================ */
+add({ part: 1, min: 4, title: '本学期大纲（暂定）', body: `
+<div class="syl">${SYL.map(([zh, en, hook], i) => `<div class="it${i === 0 ? ' now' : ''}${i + 1 === L.comp ? ' new' : ''}"><i>${String(i + 1).padStart(2, '0')}</i><b>${zh}</b><em>${en}</em><span>${hook}</span></div>`).join('')}</div>
+<p class="cap">开场与数据压缩同属第 1 讲；第 2 讲为摊还分析，后续安排以讨论班网站为准。</p>`,
+  notes: `【约 4 分钟】
+这是暂定大纲，一共 ${SYL.length} 讲，今天是第 1 讲。【每讲一句话，快速点过】
+数据压缩：压缩有极限，有损压缩是主动放弃“完全还原”。
+摊还分析：偶尔很慢没关系，平均快就行。概率数据结构：用一点误差换大量内存。高维算法：“差不多最近”就够了。
+存储层级、并行：搬数据比算数据贵；处理器再多也绕不开依赖链。
+优化、随机优化：快速逼近，用随机性跳出局部最优。
+在线算法：看不到未来也要做决定。FFT：问题不变，把 n² 降到 n log n。
+量子计算：换一种计算模型。
+【过渡】这些题目看起来很散。接下来用十一个具体问题把它们串起来。` });
+
+add({ part: 1, min: 1.5, title: '关于这个讨论班', body: `
+<div class="about">
+ <div><div class="h">是什么</div><p>复旦大学数学科学学院的现代算法讨论班。本学期共 <b>${SYL.length} 讲</b>；第 1 讲包含开场与数据压缩，随后每讲一个专题。</p></div>
+ <div><div class="h">怎么讲</div><p>每周一个想法，从第一性原理讲起：<b>定义、一个真正的证明、具体的数字</b>。</p></div>
+ <div><div class="h">需要什么</div><p>基础算法课的工具：渐近分析、基本概率、基本数据结构。</p></div>
+</div>
+${key('今天从具体问题出发：看输入如何到达、结果要保证什么、时间和空间怎样计费。')}`,
+  notes: `【约 1.5 分钟】
+数学科学学院的现代算法讨论班，这学期共 ${SYL.length} 讲，第 1 讲包含开场与数据压缩，随后每讲一个专题。每次讲一个想法，从定义讲起，配一个真正的证明和具体的数字。需要的只是基础算法课的工具。
+【过渡】大纲给出了专题，下面用具体问题解释为什么要研究它们。` });
+
+add({ part: 1, min: 1.5, title: '十一个具体问题，按标题分成三组', body: `
+<p class="scene" style="margin-bottom:14px">设想你在一家视频网站做工程师。下面的问题涉及海量数据、持续到来的请求和有限的计算资源；我们要重新选择合适的算法保证。</p>
+<div class="agenda">
+ ${[
+   ['一', '必须正确吗？', 'var(--rust)', [['矩阵乘法的结果算对了吗？', L.prob], ['这个网址爬过吗？', L.prob], ['这张图，库里有相似的吗？', L.hd], ['1080p 视频怎么塞进 5 Mbit/s？', L.comp], ['推荐模型的最优参数在哪？', `${L.opt}·${L.sa}`]]],
+   ['二', '必须停机吗？', 'var(--blue)', [['今天来了多少个不同的用户？', L.prob], ['缓存只放得下 3 个视频，留哪 3 个？', L.online]]],
+   ['三', '必须快吗？快是什么？', 'var(--teal)', [['数组满了，复制一遍值不值？', L.amort], ['同样是 O(n)，账单为何不同？', `${L.cache}·${L.par}`], ['两个百万位的数相乘', L.fft], ['十亿条无序记录里找一条', L.qc]]]
+ ].map(([n, h, c, items], g) => `<div style="--c:${c}"><div class="h"><span>${n}</span>${h}</div><ol start="${[1, 6, 8][g]}">${items.map(([q, l]) => `<li>${q}<i>第 ${l} 讲</i></li>`).join('')}</ol></div>`).join('')}
+</div>`,
+  notes: `【约 1.5 分钟】
+设想你在一家视频网站做工程师。下面十一个问题，分别展示输入、结果保证和资源限制如何改变算法设计。
+我按标题分成三组：第一组问“必须正确吗”，第二组问“必须停机吗”，第三组问“必须快吗、快是什么”。
+每个问题我都先给“直接做”的代价，请大家先猜现代做法，再揭晓。证明都留给各个专题。` });
+
+/* ============================ 一 · 必须正确吗？ · 12.5 分钟 ============================ */
+puzzle({ part: 2, opener: true, min: 3, title: '别人算出的矩阵乘积，怎样快速验算？',
+  scene: `给定三个 ${mi(t`n\times n`)} 整数矩阵 A、B、C。别人声称 ${mi('AB=C')}；我们只想判断这句话对不对。`,
+  old: { lab: '按定义重新乘一遍', big: mi(t`O(n^3)`), sub: '逐项计算 AB，再与 C 比较。可以精确判断，但验算几乎和原来的计算一样贵。这里比较的是普通三重循环乘法。' },
+  neu: { lab: 'Freivalds 随机验证', big: mi(t`O(n^2)`), sub: `随机选一个 0/1 向量 x，只比较 <b>A(Bx) 与 Cx</b>：计算三次矩阵乘向量，无须求出 AB。乘积正确时一定通过；乘积错误时，单轮漏检概率至多 1/2。` },
+  relax: ['零漏检的保证'], lecs: [L.prob],
+  notes: `【约 3 分钟】
+先看旧版多项式判断的替代例子：验算别人给出的矩阵乘积。输入 A、B、C，问 AB 是否等于 C。
+普通方法重新做一次三重循环乘法，需要立方级的算术操作。
+【点击揭示】随机选 0/1 向量 x，先算 Bx，再算 A(Bx)，同时算 Cx。三次矩阵乘向量都是平方级。
+正确乘积总会通过；错误乘积可能蒙混过关，但概率至多一半。单轮误差上界的证明见附录。` });
+
+puzzle({ part: 2, min: 3, title: '这个网址，爬过没有？',
+  scene: `爬虫已经见过 ${num(URL_N)} 个网址；每抓到一个新链接，都要先问这一句。`,
+  old: { big: `≈ ${URL_SET_GB} GB`, sub: `把所有网址存进哈希表（按每个约 ${URL_BYTES} 字节估算），而且每次查询都要用到。` },
+  neu: { lab: 'Bloom filter', big: `${URL_BLOOM_GB} GB`, sub: `每个网址只占 10 bit，不存网址本身。说“没见过”<b>一定对</b>；对<b>实际没见过</b>的网址，约 <b>${(BLOOM10.fp * 100).toFixed(1)}%</b> 会误报“见过”，导致漏爬；已插入的网址不会被漏报。前提是不删除元素。` },
+  relax: ['正确'], lecs: [L.prob],
+  notes: `【约 3 分钟】
+第一组：必须正确吗？第一个问题：爬虫已经见过十亿个网址，每抓到一个新链接都要问“爬过没有”。
+直接做：存进哈希表，按每个网址 60 字节估算就是 60 GB，还得常驻内存。
+【互动】如果允许偶尔答错，能省多少？【点击揭示】
+Bloom filter：每个网址只占 10 个比特，总共 1.25 GB，小了将近 50 倍。代价：说“没见过”一定对；对实际没见过的网址，大约有 0.8% 会误报“见过”——后果只是少爬几个页面。
+这是第 3 讲概率数据结构的主角。` });
+
+puzzle({ part: 2, min: 3, title: '这张图，库里有相似的吗？',
+  scene: `图库 ${num(IMG_N)} 张图片，每张提取成 ${IMG_D} 维向量；用户上传一张，希望 0.1 秒内看到结果。`,
+  old: { big: `≈ ${Math.round(IMG_OPS / FLOPS)} 秒`, sub: `逐一比较：每次查询 ${num(IMG_OPS)} 次乘加（按每秒 10⁹ 次估算）。` },
+  neu: { lab: '局部敏感哈希（LSH）', big: '筛选少量候选', sub: '让相似的向量大概率落进同一个“桶”，用多张哈希表或探测多个桶，再比较候选。代价：找到的是<b>“差不多最近”</b>，偶尔漏掉真正最近的那张。' },
+  relax: ['精确', '正确'], lecs: [L.hd],
+  notes: `【约 3 分钟】
+以图搜图：图库一亿张图片，每张变成 512 维的向量。用户上传一张，希望 0.1 秒出结果。
+直接做：逐一比较，每次查询五百多亿次乘加，粗估要五十秒。
+【点击揭示】局部敏感哈希：设计一种哈希，让相似的向量大概率撞进同一个桶，只和桶里的少数候选比。代价是找到“差不多最近”的，偶尔漏掉真正最近的——是否够用，需要看业务要求的召回率。
+第 4 讲高维算法。` });
+
+puzzle({ part: 2, min: 3.5, title: '1080p 视频，怎么塞进 5 Mbit/s？',
+  scene: '每秒 30 帧，每帧 1920 × 1080 像素，每像素 3 字节；网络只给大约 5 Mbit/s。',
+  old: { big: `${(VID_BPS / 1e9).toFixed(2)} Gbit/s`, sub: `原样传输，是 5 Mbit/s 的约 <b>${Math.round(VID_BPS / VID_STREAM)} 倍</b>。而<b>无损</b>压缩不可能让所有文件都变短：${mi('n')} 位的文件有 ${mi(t`2^n`)} 个，更短的只有 ${mi(t`2^n - 1`)} 个（鸽笼原理）。` },
+  neu: { lab: '有损压缩', big: `÷ ${Math.round(VID_BPS / VID_STREAM)}`, sub: '利用相邻帧几乎相同、人眼对细节不敏感，丢掉看不出来的信息——<b>主动放弃“完全还原”</b>，换来几百倍的带宽。' },
+  relax: ['正确'], lecs: [L.comp],
+  notes: `【约 3.5 分钟】
+看视频：1080p、每秒 30 帧，原样传输是每秒 1.49 Gbit，大约是 5 Mbit/s 典型码率的 300 倍。
+【追问】能不能无损压 300 倍？一般不能。鸽笼原理：n 位的文件有 2 的 n 次方个，比它短的文件一共只有 2 的 n 次方减 1 个——不可能把每个文件都变短。无损压缩只能赌输入有规律。
+【点击揭示】有损压缩：相邻帧几乎一样，人眼又看不出很多细节，把这些丢掉。这就是主动放弃“完全还原”，换来几百倍的带宽。
+新增的第 1 讲数据压缩会讲：熵是压缩的极限，以及现代编码器是怎么逼近它的。` });
+
+puzzle({ part: 2, min: 3, title: '推荐模型的最优参数，在哪里？', cols: '1fr 56px 1.45fr',
+  scene: '模型有上亿个参数，要让损失函数尽量小。右边是一维的缩影：' + mi(t`f(x) = 0.1x^2 + \sin 3x`) + '。',
+  old: { big: '找不到', sub: '精确求全局最优通常不现实：函数有许多个局部低谷，参数又是上亿维。' },
+  neu: { lab: '梯度下降 · 模拟退火', big: '', sub: `${optFig()}<div style="margin-top:4px">梯度下降沿下坡走，很快停在附近的低谷（${mi(t`x \approx ${GD_END.toFixed(2)}`)}）；模拟退火偶尔接受上坡，跳出去找到更低处（${mi(t`x \approx ${SA_BEST.toFixed(2)}`)}）。目标从“最优”变成“足够好”。</div>` },
+  relax: ['精确'], lecs: [L.opt, L.sa],
+  notes: `【约 3 分钟】
+训练推荐模型：上亿个参数，让损失函数尽量小。精确求全局最优通常不现实。
+【点击揭示，指图】一维的缩影：从 x = 3.3 出发，梯度下降沿着下坡走，几十步就停在附近的低谷里，x 约 ${GD_END.toFixed(2)}；模拟退火允许偶尔往上走，最终找到更低的地方，x 约 ${SA_BEST.toFixed(2)}。图上的轨迹是页面上真正跑出来的。
+目标从“最优”变成了“足够好、足够快”。第 7、8 讲。` });
+
+/* ============================ 二 · 必须停机吗？ · 6.5 分钟 ============================ */
+puzzle({ part: 3, opener: true, min: 3, title: '今天，来了多少个不同的用户？',
+  scene: '访问记录一条接一条地来，没有“最后一条”；运营随时都想看这个数。',
+  old: { big: `${HLL_N * 8 / 1e9} GB`, sub: `存下 ${num(HLL_N)} 个 64 位用户 ID 再去重。更糟的是：数据流不会结束，等不到“算完”的那一刻。` },
+  neu: { lab: 'HyperLogLog', big: `≈ ${HLL_M / 1124} kB`, sub: `只看一遍，随时能回答，相对标准误差约 <b>${(HLL_ERR * 100).toFixed(1)}%</b>（不是每次都在这个范围内）。程序本来就不该停——要求变成：<b>每来一条都及时处理完</b>。` },
+  relax: ['停机', '精确'], lecs: [L.prob],
+  notes: `【约 3 分钟】
+第二组：必须停机吗？问题：今天来了多少个不同的用户？访问记录一条接一条地来，没有最后一条，运营随时想看。
+直接做：存下十亿个用户 ID 去重，8 GB；而且数据流不会结束，根本等不到“算完”。
+【点击揭示】HyperLogLog：十几 KB，只看一遍，随时回答，相对标准误差约 0.8%，并非每次都保证误差不到 1%。注意，这个程序本来就不该停——我们的要求变成了“每来一条都及时处理完”。
+也是第 3 讲的内容。` });
+
+puzzle({ part: 3, min: 3.5, title: '缓存只放得下 3 个视频，该留哪 3 个？',
+  scene: `请求一个接一个到来，你不知道下一个是谁：${REQ.map(x => `<span class="rq">${x}</span>`).join('')}`,
+  old: { lab: '预知未来的最优（Belady）', big: `${OPT_N} 次缺失`, sub: `${missRow(OPT_M)}总是淘汰“最晚才会再用”的视频——但它要知道未来。` },
+  neu: { lab: '最久未用（LRU）', big: `${LRU_N} 次缺失`, sub: `${missRow(LRU_M)}只看过去。可以证明：对<b>任何</b>请求序列，LRU 的缺失次数不超过最优的约 ${mi('k')} 倍（${mi('k')} 为缓存大小）。` },
+  relax: ['预知输入'], lecs: [L.online],
+  notes: `【约 3.5 分钟】
+CDN 节点的缓存只放得下 3 个视频。请求一个接一个地来，不知道下一个是谁。缓存满了，淘汰谁？
+【指左边】如果能预知未来，最优策略是淘汰“最晚才会再用”的那个，这个序列上 7 次缺失。但它要知道未来。
+【点击揭示】现实中的 LRU：淘汰最久没用的，只看过去，这里 10 次缺失。可以证明，对任何请求序列，LRU 的缺失次数至多是同容量离线最优的 k 倍，加一个初始状态常数。
+“看不到未来也要做决定，再和预知未来的最优比”，这就是第 9 讲在线算法。程序不停机，也不知道全部输入。` });
+
+/* ============================ 三 · 必须快吗？ · 10 分钟 ============================ */
+puzzle({ part: 4, opener: true, min: 2.5, title: '数组满了，复制一遍值不值？',
+  scene: `视频列表不断追加；数组满了就申请<b>两倍大</b>的新数组，把旧元素全部复制过去。追加 ${num(ARR_N)} 次：`,
+  old: { lab: '最坏的一次', big: `${num(ARR.worst)} 次复制`, sub: '某一次追加恰好遇上扩容，要把整个数组搬一遍——单看这一次，慢得吓人。' },
+  neu: { lab: '摊还分析：把总成本分摊', big: `平均 ${ARR.avg.toFixed(2)} 次`, sub: `${num(ARR_N)} 次追加总共只有 ${num(ARR_N + ARR.copies)} 次写入：<b>总代价 < 3n</b>。偶尔很慢，平均很快。` },
+  none: '对任意这样的追加序列，分摊到每次的成本为常数', lecs: [L.amort],
+  notes: `【约 2.5 分钟】
+第三组：必须快吗？快是什么？先看一个大家天天在用的东西：动态数组，满了就开两倍大的新数组，把旧的全复制过去。
+【指左边】追加一百万次，最坏的那一次要复制 52 万个元素，单看很吓人。
+【点击揭示】但总共只有约 205 万次写入，平均每次 2.05 次——总代价不超过 3n。偶尔很慢，平均很快。
+这里的平均是对操作序列分摊，不是对随机输入取期望。第 2 讲摊还分析。` });
+
+add({ part: 4, pno: ++PNO, min: 3, title: '同样是 O(n)，账单为什么不同？', body: `
+<p class="scene">两件事在课本的模型里都是 ${mi(t`\Theta(n)`)}；换一个更贴近硬件的模型，差别就出来了。</p>
+<div class="vs" style="--c:1fr 1fr;gap:28px">
+ <div class="card new" style="--tc:var(--teal)"><span class="lab">搬数据比算数据贵 · 扫描 ${mi(t`10^8`)} 个数</span><span class="big">${num(Math.ceil(SC_N / SC_B))} <small>vs.</small> ${num(SC_N)}</span><div class="sub">假设每块装 8 个数、缓存装不下全部数据：顺序读 1250 万次块传输；乱序跳读最坏可达一亿次。（模型计数，不是实测。）</div></div>
+ <div class="card new"><span class="lab">处理器再多，也要等依赖链 · 求和 ${mi(t`10^6`)} 个数</span><span class="big">${span.tree(PAR_N)} 层 <small>vs.</small> ${num(span.chain(PAR_N))} 步</span><div class="sub">两种做法都约需一百万次加法。树形计算的最长依赖链为 20 层；1000 个处理器约需 1000–1020 步。链式相加则至少需 999,999 步。</div></div>
+</div>
+<div class="pfoot"><span class="k">没有放松</span><span class="none">换了一个更诚实的成本模型</span><span class="sp"></span>${lec(L.cache)}${lec(L.par)}</div>`,
+  notes: `【约 3 分钟】
+同样是 O(n)，账单可以差很多。
+【左】搬数据比算数据贵：内存是按块搬运的。顺序扫一亿个数，大约一千多万次块传输；乱序跳着读，最多一亿次。课本模型里两者都是 O(n)。这是模型计数，不是实测时间。
+【右】并行：一百万个数求和，两两相加成一棵树只有 20 层；一个接一个加，给 1000 个处理器也要等 999,999 步。
+第 5 讲存储层级、第 6 讲并行与 GPU。` });
+
+puzzle({ part: 4, min: 2.5, title: '两个一百万位的数相乘',
+  scene: '比如验证大素数、计算高精度常数，或者做两个长序列的卷积。',
+  old: { lab: '竖式乘法', big: num(MUL_SCHOOL), sub: '每一位乘每一位：大约一万亿次个位乘法。' },
+  neu: { lab: '快速傅里叶变换（FFT）', big: `≈ ${num(Math.round(MUL_FFT / 1e6) * 1e6)}`, sub: `把乘法看成卷积，用 FFT 计算：${mi(t`n \log_2 n`)} 量级（只看量级）。通过足够精度与舍入控制，或用数论变换（NTT），可以得到<b>精确整数结果</b>。数字仅为 n log₂ n 的量级比较，不是实际指令数。` },
+  none: '规格不变，算得更少', lecs: [L.fft],
+  notes: `【约 2.5 分钟】
+两个一百万位的数相乘。竖式乘法每一位乘每一位，一万亿次。
+【点击揭示】把乘法看成卷积，用快速傅里叶变换来算，n log n 量级，大约两千万——只看量级，差了五万倍。而且结果完全精确。
+这个例子提醒我们：现代算法不只是“放松”，很多时候是在规格不变的前提下更聪明。第 10 讲 FFT。` });
+
+puzzle({ part: 4, min: 2, title: '十亿条无序记录里，找一条',
+  scene: '没有索引、没有顺序，只能一条条地问“是不是它”。',
+  old: { lab: '经典算法（平均）', big: num(GROVER[1].cl), sub: '平均要查一半。' },
+  neu: { lab: 'Grover 量子搜索', big: `≈ ${num(GROVER[1].q)}`, sub: `假设恰有一个目标，约 ${mi(t`\tfrac{\pi}{4}\sqrt N`)} 次量子查询，以高概率找到它。这里只计查询次数，需能相干地调用查询过程。前提：能可靠运行的（容错）量子计算机；而且不是所有问题都有这样的加速。` },
+  relax: ['计算模型'], lecs: [L.qc],
+  notes: `【约 2 分钟】
+最后一个：十亿条无序记录里找一条，经典算法平均要查五亿次。
+【点击揭示】Grover 量子搜索：大约两万五千次。代价是换了计算模型，而且需要能可靠运行的量子计算机——这就是“容错”；也不是所有问题都能这样加速。
+第 11 讲量子计算。` });
+
+/* ============================ 收束 · 3 分钟 ============================ */
+add({ part: 5, cls: 'closing', min: 3, title: '回到标题', body: `
+<div class="kick">回到标题</div>
+<dl class="ans">
+ <dt>正确？</dt><dd>先规定成功标准——矩阵验算允许极小漏检；Bloom filter、以图搜图、视频压缩、模型训练，都用<b>可控的不完美</b>换资源。</dd>
+ <dt>停机？</dt><dd>持续服务可以没有整体终点——用户统计、缓存一直在运行；要的是每一步及时、整体不比最优差太多。</dd>
+ <dt>快？</dt><dd>要快——但先说清在数什么：平均、搬运、依赖链；有时还能换模型，或者干脆算得更少。</dd>
+</dl>
+<div class="rule"></div>
+<p class="last">现代算法：<b>说清条件，选择保证，算清代价</b>。下周见：第 2 讲 · 摊还分析。</p>`,
+  notes: `【约 3 分钟】
+回到标题。
+正确？先规定成功标准：矩阵验算允许可控漏检；Bloom filter、以图搜图、视频压缩、模型训练，都是用可控的不完美换资源。
+停机？不必：用户统计、缓存一直在跑；要的是每一步及时，整体不比最优差太多。
+快？要快，但先说清在数什么——平均、搬运、依赖链；有时还能换模型，或者干脆算得更少。
+【互动】开场时选的答案，有谁改了？
+【最后一句】说清条件，选择保证，算清代价。下周第 2 讲，摊还分析。谢谢大家。` });
+
+/* ============================ 附录 ============================ */
+add({ part: APPX, proof: true, title: '附 1 · 摊还：为什么总代价小于 3n', body: `
+<div class="cols" style="--c:1fr 1fr;--g:56px">
+ ${box('论证', `<p class="small">追加 ${mi('n')} 次。每次写入新元素：共 ${mi('n')} 次。扩容只在大小为 ${mi(t`1, 2, 4, \dots, 2^j`)}（${mi(t`2^j < n`)}）时发生，复制量之和</p>${md(t`1 + 2 + \cdots + 2^j = 2^{j+1} - 1 < 2n.`, 'sm')}<p class="small" style="margin:0">所以总代价 ${mi(t`< n + 2n = 3n`)}，平均每次 ${mi('< 3')}。<span class="qed">∎</span></p>`, 0, 'flat')}
+ ${box('页面实算', `<p class="small" style="margin:0">${mi(t`n = 10^6`)}：复制 ${num(ARR.copies)} 次，写入共 ${num(ARR_N + ARR.copies)} 次，平均 ${ARR.avg.toFixed(3)}；最坏单次复制 ${num(ARR.worst)}。若每次只扩大固定的常数个位置，总代价会变成 ${mi(t`\Theta(n^2)`)}。</p>`, 0, 'acc')}
+</div>`,
+  notes: `【有人问时用】复制量是 1 + 2 + 4 + … ，几何级数，和不超过 2n；加上 n 次写入，总共不到 3n。如果每次只多开固定几个位置，总代价是平方级——“两倍”是关键。` });
+
+add({ part: APPX, title: '附 2 · LRU 与“预知未来的最优”', body: `
+<div class="cols" style="--c:1fr 1fr;--g:56px">
+ ${box('结论（Sleator–Tarjan, 1985）', `<p class="small" style="margin:0">缓存大小为 ${mi('k')} 时，对任意请求序列 ${mi(t`\sigma`)}：${mi(t`\mathrm{LRU}(\sigma) \le k \cdot \mathrm{OPT}(\sigma) + k`)}；并且任何确定性在线策略都无法保证优于 ${mi('k')} 倍。</p>`, 0, 'fill')}
+ ${box('直观', `<p class="small" style="margin:0">LRU 淘汰最久未用的项目；离线最优知道未来，淘汰最晚才再用的项目。比较时，两者使用相同容量的缓存。上面的界对所有请求序列成立；完整证明留给在线算法专题。</p>`, 0, 'flat')}
+</div>
+<p class="cap">示例序列 ${REQ.join(' ')}，${mi(t`k = ${CACHE_K}`)}：LRU ${LRU_N} 次缺失，最优 ${OPT_N} 次（页面实算）。</p>`,
+  notes: `【有人问时用】只陈述结论和直观；完整证明留给第 9 讲。` });
+
+add({ part: APPX, proof: true, title: '附 3 · 错误乘积为什么至多一半会漏检？', body: `
+<p class="scene">设 ${mi('D=AB-C\\ne 0')}。一轮漏检恰好是 ${mi('Dx=0')}；x 的每个坐标独立、等概率取 0 或 1。</p>
+${box('固定其他坐标，只看一个随机比特', `<p>因为 D 非零，存在 ${mi(t`D_{ij}\ne0`)}。先固定除 ${mi('x_j')} 外的所有坐标，第 i 行的检查条件变为</p>${md(t`D_{ij}x_j+\sum_{k\ne j}D_{ik}x_k=0.`)}<p>第二项已经固定，而 ${mi('x_j')} 只有 0、1 两种等可能取值。系数 ${mi(t`D_{ij}\ne0`)}，所以两种取值至多有一种让等式成立。</p>`)}
+${key(`因此 ${mi(t`\Pr[Dx=0]\le\Pr[(Dx)_i=0]\le1/2`)}。对固定的错误输入，独立重复 t 轮、全部通过的概率至多 ${mi(t`(1/2)^t`)}；若 D=0，每轮必定通过。`)}
+<p class="cap">结论基于精确算术；时间按算术操作次数计数。大整数的位运算成本需另计。</p>`,
+notes: `【有人问时用】选 D 的一个非零元素，固定其他随机坐标，只留下一个随机比特。零或一至多有一个能抵消那一行的固定和，所以漏检概率至多一半。各轮独立，漏检概率相乘。` });
+
+add({ part: APPX, title: '参考文献', body: `
+<div class="refs">
+ <div>
+  <h3>综合与在线</h3>
+  <p>T. H. Cormen et al. <i>Introduction to Algorithms</i>, 4th ed.</p>
+  <p>A. Borodin, R. El-Yaniv. <i>Online Computation and Competitive Analysis</i>, 1998.</p>
+  <p>D. D. Sleator, R. E. Tarjan (1985). Amortized efficiency of list update and paging rules. <i>CACM</i>.</p>
+ </div>
+ <div>
+  <h3>随机、近似与压缩</h3>
+  <p>M. Mitzenmacher, E. Upfal. <i>Probability and Computing</i>.</p>
+  <p>P. Indyk, R. Motwani (1998). Approximate nearest neighbors. <i>STOC</i>.</p>
+  <p>T. M. Cover, J. A. Thomas. <i>Elements of Information Theory</i>.</p>
+ </div>
+ <div>
+  <h3>模型、FFT 与量子</h3>
+  <p>A. Aggarwal, J. S. Vitter (1988). The input/output complexity of sorting. <i>CACM</i>.</p>
+  <p>J. W. Cooley, J. W. Tukey (1965). An algorithm for the machine calculation of complex Fourier series. <i>Math. Comp.</i></p>
+  <p>L. K. Grover (1996). A fast quantum mechanical algorithm for database search. <i>STOC</i>.</p>
+ </div>
+</div>`,
+  notes: `【参考文献】各专题会给出自己的阅读材料；这里只列与今天例子相关的入门读物。` });
+
+/* =====================================================================
+   5. Render, navigation, overview, notes, print
+   ===================================================================== */
+const N = slides.length;
+const MAIN = slides.filter(s => s.part < APPX).length;
+const ranges = MAIN_PARTS.map(p => { const idx = slides.map((s, i) => s.part === p ? i : -1).filter(i => i >= 0); return { start: idx[0], end: idx[idx.length - 1] + 1 }; });
+check(MAIN === 16 && PNO === 11, 'the main path has 16 slides, eleven of them concrete problems');
+const MINUTES = MAIN_PARTS.map(p => slides.filter(s => s.part === p).reduce((a, s) => a + (s.min || 0), 0));
+check(MINUTES.reduce((a, b) => a + b, 0) === 43, 'time budget adds up to 43 min');
+let appx = 0;
+slides.forEach((s, i) => {
+  s.no = s.part < APPX ? String(i + 1).padStart(2, '0') : '附' + (++appx);
+  s.end = s.part < APPX ? slides.slice(0, i + 1).reduce((a, x) => a + (x.min || 0), 0) : null;
+});
+const zhHTML = s => (s.notes || '').split('\n').map(l => `<p>${esc(l).replace(/【([^】]*)】/g, '<span class="cue">【$1】</span>')}</p>`).join('');
+function railHTML(i) {
+  return `<div class="rail">${MAIN_PARTS.map(p => {
+    const r = ranges[p], f = Math.max(0, Math.min(1, (i - r.start + 1) / (r.end - r.start)));
+    return `<div class="seg${slides[i].part === p ? ' on' : ''}" style="flex:${r.end - r.start}"><div class="bar"><div class="fill" style="width:${(f * 100).toFixed(1)}%"></div></div><span>${PARTS[p]}</span></div>`;
+  }).join('')}</div>`;
+}
+function headHTML(s) {
+  const tag = s.proof ? '<span class="pt">证明</span>' : '';
+  const pn = s.pno ? `问题 ${s.pno} / 11` : '';
+  if (s.opener) return `<header><div class="chap"><span class="cn">${ROMAN[s.part]}</span><div><div class="ct">第${GROUP[s.part]}组 · ${PARTS[s.part]}<span class="pn">${pn}</span></div><div class="cq">${PART_Q[s.part]}</div></div></div><h2>${esc(s.title)}</h2></header>`;
+  const eb = s.pno ? `<span class="rn">${s.pno} / 11</span>${PARTS[s.part]}` : `${ROMAN[s.part] ? `<span class="rn">${ROMAN[s.part]}</span>` : ''}${PARTS[s.part]}`;
+  return `<header><div class="eyebrow">${eb}${tag}</div><h2>${esc(s.title)}</h2></header>`;
+}
+const bare = s => s.cls === 'title' || s.cls === 'divider' || s.cls === 'closing';
+document.getElementById('deck').innerHTML = slides.map((s, i) => `
+<section class="slide ${s.cls || ''}${s.part === APPX ? ' appx' : ''}${s.pno ? ' pslide' : ''}" style="--pc:${PART_C[s.part]}" data-index="${i}" aria-label="第 ${s.no} 页：${esc(s.title)}">
+ ${bare(s) ? '' : headHTML(s)}
+ <div class="body">${s.body}</div>
+ <aside class="notes">${esc(s.notes || '')}</aside>
+ <div class="foot"><span class="ttl">${i === 0 ? '→ 下一页 · ← 上一页 · O 总览 · N 讲稿' : '现代算法讨论班 · 开场'}</span>${railHTML(i)}<span class="n"><b>${s.no}</b>${s.part < APPX ? ' / ' + MAIN : ''}</span></div>
+</section>`).join('');
+
+
+
+const sections = [...document.querySelectorAll('#deck .slide')];
+const nums = v => String(v).trim().split(/\s+/).map(Number);
+function maxStep(sec) { let m = 0; sec.querySelectorAll('[data-step],[data-only]').forEach(n => { ['step', 'only'].forEach(k => { if (n.dataset[k]) m = Math.max(m, ...nums(n.dataset[k])); }); }); return m; }
+function applyStep(sec, k) {
+  sec.querySelectorAll('[data-step]').forEach(n => n.classList.toggle('hidden', +n.dataset.step > k));
+  sec.querySelectorAll('[data-only]').forEach(n => n.classList.toggle('hidden', !nums(n.dataset.only).includes(k)));
+}
+const STEPS = sections.map(sec => { const m = maxStep(sec); sec.querySelectorAll('[data-only]').forEach(n => { if (nums(n.dataset.only).includes(m)) n.classList.add('last-only'); }); return m; });
+let index = 0, stepIx = 0;
+const clock = m => `${Math.floor(m)}:${m % 1 ? '30' : '00'}`;
+function show() {
+  sections.forEach((sec, i) => sec.classList.toggle('active', i === index));
+  applyStep(sections[index], stepIx);
+  const s = slides[index];
+  document.getElementById('notes').innerHTML = `<h4>${s.no}${s.part < APPX ? ' / ' + MAIN : ''} · 步骤 ${stepIx} / ${STEPS[index]}${s.min ? ` · 本页 ${s.min} 分钟 · 讲完时约 ${clock(s.end)}` : ''} · ${esc(s.title)}</h4><div class="zh">${zhHTML(s)}</div>`;
+  document.querySelectorAll('#overview .card').forEach((c, i) => c.classList.toggle('on', i === index));
+  history.replaceState(null, '', `#${index + 1}.${stepIx}`);
+}
+function next() { if (stepIx < STEPS[index]) stepIx++; else if (index < N - 1) { index++; stepIx = 0; } show(); }
+function prev() { if (stepIx > 0) stepIx--; else if (index > 0) { index--; stepIx = STEPS[index]; } show(); }
+function go(i, k = 0) { index = Math.max(0, Math.min(N - 1, i)); stepIx = Math.max(0, Math.min(STEPS[index], k)); show(); }
+
+function buildOverview() {
+  const grid = document.querySelector('#overview .grid'); if (grid.children.length) return;
+  sections.forEach((sec, i) => {
+    const card = document.createElement('div'); card.className = 'card';
+    const thumb = document.createElement('div'); thumb.className = 'thumb';
+    const clone = sec.cloneNode(true); clone.classList.add('active'); applyStep(clone, STEPS[i]);
+    thumb.appendChild(clone); card.appendChild(thumb);
+    card.insertAdjacentHTML('beforeend', `<div class="meta"><span class="mono">${slides[i].no}</span> · ${PARTS[slides[i].part]}${slides[i].proof ? ' · proof' : ''} · <b>${esc(slides[i].title)}</b></div>`);
+    card.onclick = () => { go(i); toggleOverview(false); };
+    grid.appendChild(card);
+  });
+  show();
+}
+function toggleOverview(force) { const o = document.getElementById('overview'), open = force ?? !o.classList.contains('open'); if (open) buildOverview(); o.classList.toggle('open', open); }
+function toggleNotes() { document.getElementById('notes').classList.toggle('open'); }
+document.addEventListener('keydown', e => {
+  if (e.altKey || e.ctrlKey || e.metaKey) return;
+  const k = e.key;
+  if (k === 'o' || k === 'O') { e.preventDefault(); toggleOverview(); return; }
+  if (k === 'n' || k === 'N') { e.preventDefault(); toggleNotes(); return; }
+  if (k === 'Escape') { toggleOverview(false); document.getElementById('notes').classList.remove('open'); return; }
+  if (document.getElementById('overview').classList.contains('open')) return;
+  if (k === 'ArrowRight' || k === ' ' || k === 'PageDown' || k === 'ArrowDown') { e.preventDefault(); next(); }
+  else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'ArrowUp') { e.preventDefault(); prev(); }
+  else if (k === 'Home') { e.preventDefault(); go(0); }
+  else if (k === 'End') { e.preventDefault(); go(MAIN - 1); }
+});
+document.getElementById('deck').addEventListener('click', e => {
+  if (e.target.closest('a')) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  (e.clientX - r.left) > r.width * 0.3 ? next() : prev();
+});
+function fit() { document.getElementById('deck').style.transform = `scale(${Math.min(innerWidth / 1600, innerHeight / 900)})`; }
+addEventListener('resize', fit); fit();
+function printState(on) {
+  sections.forEach((sec, i) => applyStep(sec, on ? STEPS[i] : (i === index ? stepIx : 0)));
+  if (!on) show();
+}
+addEventListener('beforeprint', () => printState(true));
+addEventListener('afterprint', () => printState(false));
+matchMedia('print').addEventListener?.('change', e => printState(e.matches));
+
+function renderMath() {
+  if (!window.katex) return false;
+  document.querySelectorAll('.tex[data-tex]').forEach(el => {
+    try { katex.render(el.dataset.tex, el, { displayMode: el.dataset.display === '1', throwOnError: true, output: 'html' }); }
+    catch (err) { console.error('KaTeX failed on: ' + el.dataset.tex + ' — ' + err.message); failures.push('KaTeX: ' + el.dataset.tex); }
+    el.removeAttribute('data-tex');
+  });
+  return true;
+}
+sections.forEach((sec, i) => applyStep(sec, STEPS[i]));
+{ const m = location.hash.match(/^#(\d+)(?:\.(\d+))?$/); if (m) go(+m[1] - 1, +(m[2] || 0)); else go(0); }
+addEventListener('DOMContentLoaded', () => renderMath());
+addEventListener('load', () => { renderMath(); window.deckReady = true; });
+window.deck = { checks: () => checks, failures, N, MAIN, STEPS, go, next, prev, applyStep, sections, state: () => ({ index, step: stepIx }) };
+console.info(`开场讲座（概览 + 十一个问题）: ${checks} assertions checked, ${failures.length} failed; ${MAIN} main + ${N - MAIN} appendix slides; ${MINUTES.join(' / ')} min.`);
+</script>
+</body>
+</html>
