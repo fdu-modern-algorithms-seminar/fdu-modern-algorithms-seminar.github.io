@@ -1237,6 +1237,23 @@ ${remark(`KT（<span class="nb">${mi(t`\alpha=\tfrac12`)}）</span>把它改进�
 ${key('每符号冗余 ≤ log₂(T+1)/T → 0：模型免费学会了信源。', 5)}`,
 notes: NOTES_ZH[28] });
 
+add({ part: 2, title: '有损压缩：舍弃哪些信息，为什么更容易压缩？', body: `
+<p class="small" style="margin:0 0 8px"><b>动机</b>　图像、音频和视频通常只需保持感知质量。允许重建结果 ${mi(t`\hat x`)} 与 ${mi('x')} 有小幅差异，就能把许多相近的输入合并为同一种表示。</p>
+<table class="t wide" style="font-size:20px;line-height:1.3">
+ <tr><th style="width:300px">方法</th><th style="width:420px">为什么可以舍弃？</th><th>具体怎样做？</th></tr>
+ <tr><td><b>降低采样密度</b></td><td>人对某些空间、时间或颜色细节不敏感</td><td>降低分辨率或帧率；色度子采样：亮度精细、颜色粗略</td></tr>
+ <tr><td><b>量化：降低数值精度</b></td><td>很接近的数值带来相似的感知效果</td><td>一段区间映射到同一代表值：<span class="nb">${mi('101, 102, 103')} → ${mi('102')}</span></td></tr>
+ <tr><td><b>变换后选择性量化</b></td><td>不同频率成分的重要性不同</td><td>DCT 分离频率；不敏感的系数粗量化，小系数归零</td></tr>
+ <tr><td><b>按内容删减（尺寸调整）</b></td><td>平坦背景对画面主体影响较小</td><td>Seam Carving：用 DP 找到低代价像素路径并删除</td></tr>
+</table>
+${step(1, `<div style="margin-top:14px">${flow([{ v: mi('x') }, { box: '预测、变换', v: '残差 → DCT' }, { v: mi('c') }, { box: '量化', v: '有损', hot: true }, { v: mi('q') }, { box: '概率建模 + 熵编码', v: 'Huffman · AC · ANS', s: '无损' }, { v: '比特流' }])}</div>`)}
+${step(2, `<div class="cols" style="--c:minmax(0,1fr) minmax(0,1fr);--g:40px;margin-top:12px">
+ <p class="small" style="margin:0"><b>视频</b>　先用邻近像素或参考帧预测当前画面，再对<b>预测残差</b>做变换和量化。预测与变换让表示更容易压缩，<b>只有量化舍弃精度</b>。</p>
+ <p class="small" style="margin:0"><b>为什么省比特？</b>　<span class="nb">${mi(t`q=\operatorname{round}(c/\Delta)`)}，</span><span class="nb">${mi(t`\hat c=\Delta q`)}，</span><span class="nb">${mi(t`|c-\hat c|\le\Delta/2`)}。</span>步长 ${mi(t`\Delta`)} 越大，取值越少、零越多，<span class="nb">${mi(t`H(q)`)}</span> 越小：比特更少，误差更大。</p>
+</div>`)}
+${key('解码器精确恢复保留的符号 q，再由它近似重建原始数据 x。', 3)}`,
+notes: `有损压缩一页。动机：图像、音频、视频只要求感知质量，允许重建 x̂ 与 x 有小差异，就能把很多相近输入合并成同一个表示。表格四种舍弃方式：降低采样密度（分辨率、帧率、色度子采样）；量化（一段区间映射到一个代表值，101、102、103 都重建为 102）；变换后选择性量化（DCT 分离频率，不敏感的系数粗量化、小系数归零）；按内容删减（Seam Carving 用 DP 找低代价像素路径删掉）。视频的典型流程：先用邻近像素或参考帧预测，再对预测残差做变换和量化；预测和变换让表示更容易压缩，只有量化真正舍弃信息。为什么省比特：量化步长 Δ 越大，取值越少、零越多、H(q) 越小，比特越少但误差越大——这就是码率-失真权衡。最后一步仍是前面讲的概率建模 + 无损熵编码（Huffman、算术编码、ANS）。解码器精确恢复 q，再由它近似重建 x。` });
+
 /* ---------------- Part IV: Deep Models ---------------- */
 add({ part: 3, title: '对数损失就是码长：每个预测器都是压缩器', body: `
 <div class="cols" style="--c:1fr 560px;--g:44px">
