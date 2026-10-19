@@ -8,70 +8,114 @@
     body {
       margin: 0;
       background: #ffffff;
-      color: #222222;
+      color: #1f2328;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
-      line-height: 1.6;
+      font-size: 16px;
+      line-height: 1.65;
+      -webkit-font-smoothing: antialiased;
     }
     main {
-      max-width: 880px;
+      max-width: 780px;
       margin: 0 auto;
-      padding: 40px 20px;
+      padding: 60px 24px 72px;
+    }
+    header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e5e7eb;
     }
     h1 {
-      font-size: 28px;
-      font-weight: 600;
-      margin: 0 0 8px 0;
-    }
-    h2 {
-      font-size: 20px;
-      font-weight: 600;
-      margin: 32px 0 12px 0;
-    }
-    .subtitle {
-      color: #555555;
-      margin: 0 0 32px 0;
-      padding-bottom: 24px;
-      border-bottom: 1px solid #eeeeee;
-    }
-    p {
-      margin: 0 0 16px 0;
-    }
-    ol {
-      margin: 0;
-      padding-left: 22px;
-    }
-    li {
+      font-size: 30px;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+      color: #111111;
       margin: 0 0 6px 0;
     }
+    .subtitle {
+      font-size: 16px;
+      color: #57606a;
+      margin: 0;
+    }
+    .intro {
+      color: #333333;
+      margin: 0 0 36px 0;
+    }
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: #111111;
+      margin: 36px 0 16px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    h2 .term {
+      font-size: 14px;
+      font-weight: 500;
+      color: #656d76;
+    }
+    ol.syllabus {
+      margin: 0;
+      padding-left: 24px;
+      font-variant-numeric: tabular-nums;
+    }
+    ol.syllabus li {
+      margin: 0;
+      padding: 7px 0;
+      border-bottom: 1px solid #f3f4f6;
+      color: #1f2328;
+    }
+    ol.syllabus li:last-child {
+      border-bottom: none;
+    }
+    ol.syllabus li::marker {
+      color: #8c959f;
+      font-weight: 500;
+    }
+    .speaker {
+      color: #57606a;
+      font-size: 15px;
+    }
     a {
-      color: #1a4f9c;
+      color: #0969da;
       text-decoration: none;
     }
     a:hover {
       text-decoration: underline;
     }
     footer {
-      margin-top: 48px;
-      padding-top: 16px;
-      border-top: 1px solid #eeeeee;
-      color: #555555;
+      margin-top: 52px;
+      padding-top: 20px;
+      border-top: 1px solid #e5e7eb;
+      color: #57606a;
       font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+    }
+    footer p {
+      margin: 0;
     }
   </style>
 </head>
 <body>
   <main>
-    <h1>Fudan Modern Algorithms Seminar</h1>
-    <p class="subtitle">School of Mathematical Sciences, Fudan University</p>
+    <header>
+      <h1>Fudan Modern Algorithms Seminar</h1>
+      <p class="subtitle">School of Mathematical Sciences, Fudan University</p>
+    </header>
 
-    <p>It is a seminar on Modern Algorithms, organized under the School of Mathematical Sciences at Fudan University.</p>
+    <p class="intro">It is a seminar on Modern Algorithms, organized under the School of Mathematical Sciences at Fudan University.</p>
 
-    <h2>Syllabus — 26fall</h2>
+    <h2>Syllabus <span class="term">26fall</span></h2>
 
-    <ol>
-      <li><a href="opening/">Opening Lecture</a> &amp; <a href="compression/">Compression Algorithms</a> — <a href="https://github.com/Chi-Shan0707">Yuhan Chi</a></li>
+    <ol class="syllabus">
+      <li><a href="opening/">Opening Lecture</a> &amp; <a href="compression/">Compression Algorithms</a> <span class="speaker">— <a href="https://github.com/Chi-Shan0707">Yuhan Chi</a></span></li>
       <li>Probabilistic Data Structures</li>
-      <li>Distance Algorithms</li>
+      <li>Clustering Algorithms</li>
       <li>High-Dimensional Algorithms: LSH &amp; ANN</li>
       <li>Memory Hierarchy &amp; Cache-Aware Algorithms</li>
       <li>Parallel, GPU &amp; Async Algorithms</li>
@@ -83,8 +127,8 @@
     </ol>
 
     <footer>
+      <p>This seminar is launched by <a href="https://github.com/Chi-Shan0707">Yuhan Chi</a>. Great thanks to all participants!</p>
       <a href="https://github.com/fdu-modern-algorithms-seminar/fdu-modern-algorithms-seminar.github.io">GitHub</a>
-      <p style="margin-top:8px">This seminar is launched by <a href="https://github.com/Chi-Shan0707">Yuhan Chi</a>.</p>
     </footer>
   </main>
 </body>
